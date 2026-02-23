@@ -5,6 +5,7 @@ import { RegisterForm } from "./Register";
 import { AdminDashboard } from "./AdminDashboard";
 import { AuthComponent } from "./Auth";
 import { DataPurchase } from "./DataPurchase";
+import DocumentStorage from "./DocumentStorage";
 
 const SESSION_DURATION = 25 * 60;
 
@@ -36,6 +37,7 @@ const MODULES = [
   { id: "skills", icon: "🎓", label: "Skills Hub" },
   { id: "map", icon: "📍", label: "Help Map" },
   { id: "browser", icon: "🌐", label: "Browser" },
+  { id: "documents", icon: "📚", label: "My Documents" },
   { id: "data", icon: "📊", label: "Buy Data" },
   { id: "support", icon: "💳", label: "Support" },
 ];
@@ -287,7 +289,32 @@ function MainApp({ sponsor, user, onLogout }) {
         </div>
         <div style={{ ...M.bucksChip, marginLeft: 'auto', background: 'rgba(0,217,245,0.15)' }}>
           <span style={{ fontSize: 12 }}>{user?.name?.split(' ')[0]}</span>
-          <button onClick={onLogout} style={{ background: 'none', border: 'none', color: 'rgba(232,240,254,0.6)', cursor: 'pointer', padding: '4px 8px', fontSize: 10, fontWeight: 700 }}>🚪</button>
+          <button 
+            onClick={onLogout} 
+            title="Logout"
+            style={{ 
+              background: 'none', 
+              border: 'none', 
+              color: 'rgba(232,240,254,0.8)', 
+              cursor: 'pointer', 
+              padding: '4px 8px', 
+              fontSize: 14, 
+              fontWeight: 700,
+              transition: 'all 0.3s',
+              borderRadius: '4px',
+              marginLeft: '4px'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(255,68,68,0.2)';
+              e.currentTarget.style.color = '#ff5555';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'none';
+              e.currentTarget.style.color = 'rgba(232,240,254,0.8)';
+            }}
+          >
+            🚪
+          </button>
         </div>
       </div>
       {/* progress strip */}
@@ -347,6 +374,10 @@ function MainApp({ sponsor, user, onLogout }) {
                 </div>
               </div>
             )}
+        </div>
+      ) : module === "documents" ? (
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "auto" }}>
+          <DocumentStorage user={user} />
         </div>
       ) : module === "data" ? (
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "auto" }}>
