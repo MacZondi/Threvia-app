@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
 import { AuthComponent } from "./Auth";
+import { DataPurchase } from "./DataPurchase";
 
 const SESSION_DURATION = 25 * 60;
 
@@ -32,6 +33,7 @@ const MODULES = [
   { id: "skills", icon: "🎓", label: "Skills Hub" },
   { id: "map", icon: "📍", label: "Help Map" },
   { id: "browser", icon: "🌐", label: "Browser" },
+  { id: "data", icon: "📊", label: "Buy Data" },
   { id: "support", icon: "💳", label: "Support" },
 ];
 
@@ -197,7 +199,7 @@ function MainApp({ sponsor, user }) {
 
   const switchModule = (id) => {
     setModule(id);
-    if (id === "chat" || id === "browser") return;
+    if (id === "chat" || id === "browser" || id === "data") return;
     const intros = {
       sexual: "Sexual Health space 🌿 Everything here is 100% anonymous. What would you like to know?",
       mental: "Mind & Mood 🧠 This is a safe space. How are you feeling today?",
@@ -338,6 +340,20 @@ function MainApp({ sponsor, user }) {
                 </div>
               </div>
             )}
+        </div>
+      ) : module === "data" ? (
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "auto" }}>
+          <DataPurchase 
+            userAddress={user?.address} 
+            userBucks={bucks}
+            onPurchaseComplete={(data) => {
+              setToast(`✅ ${data.package.dataSize} activated!`);
+              if (data.paymentMethod === 'bucks') {
+                setBucks((b) => Math.max(0, b - data.bucksSpent));
+              }
+              setTimeout(() => setToast(null), 3000);
+            }}
+          />
         </div>
       ) : (
         <>
