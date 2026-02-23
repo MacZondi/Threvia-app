@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { sdk } from "@farcaster/miniapp-sdk";
 
 const SESSION_DURATION = 25 * 60;
 
@@ -420,6 +421,11 @@ function MainApp({ sponsor }) {
 export default function Threvia() {
   const [stage, setStage] = useState("select");
   const [sponsor, setSponsor] = useState(null);
+  
+  useEffect(() => {
+    sdk.actions.ready();
+  }, []);
+  
   if (stage === "select") return <SponsorSelect onSelect={(s) => { setSponsor(s); setStage("ad"); }} />;
   if (stage === "ad") return <AdPlayer sponsor={sponsor} onDone={() => setStage("app")} />;
   return <MainApp sponsor={sponsor} />;

@@ -1,0 +1,31 @@
+{
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "Threvia Intelligence Engine",
+    "homeUrl": "https://threvia-app.vercel.app",
+    "iconUrl": "https://threvia-app.vercel.app/threvia-icon.png",
+    "splashImageUrl": "https://threvia-app.vercel.app/threvia-splash.png",
+    "splashBackgroundColor": "#06080f",
+    "webhookUrl": "https://threvia-app.vercel.app/api/webhook",
+    "subtitle": "Health & wellness for South African youth",
+    "description": "Threvia Intelligence Engine - Compassionate, peer-to-peer guide for sexual health, mental wellness, skills development & community resources. Anonymous, judgment-free support.",
+    "screenshotUrls": [
+      "https://threvia-app.vercel.app/screenshots/1.png",
+      "https://threvia-app.vercel.app/screenshots/2.png",
+      "https://threvia-app.vercel.app/screenshots/3.png"
+    ],
+    "primaryCategory": "lifestyle",
+    "tags": ["health", "wellness", "education", "youth", "south-africa", "mental-health"],
+    "heroImageUrl": "https://threvia-app.vercel.app/threvia-hero.png",
+    "tagline": "Health, wellness & skills — on your terms",
+    "ogTitle": "Threvia Intelligence Engine",
+    "ogDescription": "Free internet + peer health guidance for South African youth. Anonymous. Judgment-free. Evidence-based.",
+    "ogImageUrl": "https://threvia-app.vercel.app/threvia-og.png",
+    "noindex": false
+  }
+}
