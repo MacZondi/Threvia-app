@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
+import { LoginForm } from "./Login";
+import { RegisterForm } from "./Register";
+import { AdminDashboard } from "./AdminDashboard";
 import { AuthComponent } from "./Auth";
 import { DataPurchase } from "./DataPurchase";
 
@@ -158,7 +161,7 @@ function AdPlayer({ sponsor, onDone }) {
 }
 
 // ── SCREEN 3: Main App ──────────────────────────────────────────────────────
-function MainApp({ sponsor, user }) {
+function MainApp({ sponsor, user, onLogout }) {
   const [timeLeft, setTimeLeft] = useState(SESSION_DURATION);
   const [expired, setExpired] = useState(false);
   const [module, setModule] = useState("chat");
@@ -281,6 +284,10 @@ function MainApp({ sponsor, user }) {
         <div style={M.bucksChip} onClick={() => setShowBucksModal(true)}>
           <span style={M.bucksNum}>{bucks}</span>
           <span style={M.bucksLbl}>Bucks</span>
+        </div>
+        <div style={{ ...M.bucksChip, marginLeft: 'auto', background: 'rgba(0,217,245,0.15)' }}>
+          <span style={{ fontSize: 12 }}>{user?.name?.split(' ')[0]}</span>
+          <button onClick={onLogout} style={{ background: 'none', border: 'none', color: 'rgba(232,240,254,0.6)', cursor: 'pointer', padding: '4px 8px', fontSize: 10, fontWeight: 700 }}>🚪</button>
         </div>
       </div>
       {/* progress strip */}
@@ -437,36 +444,88 @@ function MainApp({ sponsor, user }) {
 
 // ── ROOT ─────────────────────────────────────────────────────────────────────
 export default function Threvia() {
-  const [stage, setStage] = useState("auth");
+  const [stage, setStage] = useState("login"); // 'login', 'register', 'admin', 'select', 'ad', 'app'
+  const [authMode, setAuthMode] = useState("login"); // 'login' or 'register'
   const [sponsor, setSponsor] = useState(null);
   const [user, setUser] = useState(null);
   
   useEffect(() => {
     sdk.actions.ready();
     // Check if user is already authenticated
-    const storedUser = localStorage.getItem('threviaUser');
+    const storedUser = localStorage.getItem('threviaCurrentUser');
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
-        setStage("select");
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
+        // If admin, show admin dashboard, otherwise go to sponsor selection
+        if (userData.email === 'admin@threvia.app') {
+          setStage("admin");
+        } else {
+          setStage("select");
+        }
       } catch (e) {
         console.log('Failed to restore user session');
       }
     }
   }, []);
   
-  const handleAuthSuccess = (userData) => {
+  const handleLoginSuccess = (userData) => {
+    setUser(userData);
+    // Check if admin
+    if (userData.email === 'admin@threvia.app') {
+      setStage("admin");
+    } else {
+      setStage("select");
+    }
+  };
+
+  const handleRegisterSuccess = (userData) => {
     setUser(userData);
     setStage("select");
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem('threviaCurrentUser');
+    setUser(null);
+    setStage("login");
+    setAuthMode("login");
+  };
   
-  // Authentication screen
-  if (stage === "auth") return <AuthComponent onAuthSuccess={handleAuthSuccess} isAuthenticated={!!user} />;
+  // Authentication screens
+  if (stage === "login") {
+    return authMode === "login" ? (
+      <LoginForm 
+        onLoginSuccess={handleLoginSuccess}
+        onSwitchToRegister={() => setAuthMode("register")}
+      />
+    ) : (
+      <RegisterForm
+        onRegisterSuccess={handleRegisterSuccess}
+        onSwitchToLogin={() => setAuthMode("login")}
+      />
+    );
+  }
+
+  // Admin dashboard
+  if (stage === "admin") {
+    return <AdminDashboard onLogout={handleLogout} />;
+  }
+
+  // Verify user exists before proceeding
+  if (!user) {
+    return <LoginForm 
+      onLoginSuccess={handleLoginSuccess}
+      onSwitchToRegister={() => {
+        setAuthMode("register");
+        setStage("login");
+      }}
+    />;
+  }
   
   // Main app flow
   if (stage === "select") return <SponsorSelect onSelect={(s) => { setSponsor(s); setStage("ad"); }} />;
   if (stage === "ad") return <AdPlayer sponsor={sponsor} onDone={() => setStage("app")} />;
-  return <MainApp sponsor={sponsor} user={user} />;
+  return <MainApp sponsor={sponsor} user={user} onLogout={handleLogout} />;
 }
 
 // ── GLOBAL CSS ────────────────────────────────────────────────────────────────
