@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
+import { AuthComponent } from "./Auth";
 
 const SESSION_DURATION = 25 * 60;
 
@@ -31,6 +32,7 @@ const MODULES = [
   { id: "skills", icon: "🎓", label: "Skills Hub" },
   { id: "map", icon: "📍", label: "Help Map" },
   { id: "browser", icon: "🌐", label: "Browser" },
+  { id: "support", icon: "💳", label: "Support" },
 ];
 
 const QUICK_PROMPTS = {
@@ -154,7 +156,7 @@ function AdPlayer({ sponsor, onDone }) {
 }
 
 // ── SCREEN 3: Main App ──────────────────────────────────────────────────────
-function MainApp({ sponsor }) {
+function MainApp({ sponsor, user }) {
   const [timeLeft, setTimeLeft] = useState(SESSION_DURATION);
   const [expired, setExpired] = useState(false);
   const [module, setModule] = useState("chat");
@@ -419,16 +421,36 @@ function MainApp({ sponsor }) {
 
 // ── ROOT ─────────────────────────────────────────────────────────────────────
 export default function Threvia() {
-  const [stage, setStage] = useState("select");
+  const [stage, setStage] = useState("auth");
   const [sponsor, setSponsor] = useState(null);
+  const [user, setUser] = useState(null);
   
   useEffect(() => {
     sdk.actions.ready();
+    // Check if user is already authenticated
+    const storedUser = localStorage.getItem('threviaUser');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+        setStage("select");
+      } catch (e) {
+        console.log('Failed to restore user session');
+      }
+    }
   }, []);
   
+  const handleAuthSuccess = (userData) => {
+    setUser(userData);
+    setStage("select");
+  };
+  
+  // Authentication screen
+  if (stage === "auth") return <AuthComponent onAuthSuccess={handleAuthSuccess} isAuthenticated={!!user} />;
+  
+  // Main app flow
   if (stage === "select") return <SponsorSelect onSelect={(s) => { setSponsor(s); setStage("ad"); }} />;
   if (stage === "ad") return <AdPlayer sponsor={sponsor} onDone={() => setStage("app")} />;
-  return <MainApp sponsor={sponsor} />;
+  return <MainApp sponsor={sponsor} user={user} />;
 }
 
 // ── GLOBAL CSS ────────────────────────────────────────────────────────────────
