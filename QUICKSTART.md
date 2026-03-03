@@ -55,7 +55,7 @@ npm install --save-dev hardhat @nomicfoundation/hardhat-toolbox
 echo "PRIVATE_KEY=your_wallet_private_key_here" > .env
 
 # Deploy to Base Sepolia
-npx hardhat run scripts/deploy.js --network baseSepolia
+npx hardhat run scripts/deploy.cjs --network baseSepolia
 ```
 
 ✅ Token deployed! Copy address from output.
@@ -137,7 +137,7 @@ threvia-app/
 │   ├── deploy.js            # Deploy token
 │   └── mint.js              # Mint tokens
 ├── package.json
-└── hardhat.config.js        # Hardhat config
+└── hardhat.config.cjs        # Hardhat config
 ```
 
 ## 🐛 Troubleshooting
@@ -163,7 +163,7 @@ cat backend/.env
 echo $PRIVATE_KEY
 
 # Try again
-npx hardhat run scripts/deploy.js --network baseSepolia
+npx hardhat run scripts/deploy.cjs --network baseSepolia
 ```
 
 ### Can't register user

@@ -3,7 +3,7 @@ const hre = require("hardhat");
 async function main() {
   const args = process.argv.slice(2);
   if (args.length < 2) {
-    console.error("Usage: npx hardhat run scripts/mint.js --network baseSepolia <TOKEN_ADDRESS> <AMOUNT>");
+    console.error("Usage: npx hardhat run scripts/mint.cjs --network baseSepolia <TOKEN_ADDRESS> <AMOUNT>");
     process.exit(1);
   }
 

@@ -56,9 +56,9 @@ You now have a complete, production-ready ecosystem for Threvia consisting of:
 - `backend/README.md` - API documentation
 
 ### Smart Contracts & Deployment
-- `hardhat.config.js` - Hardhat configuration
-- `scripts/deploy.js` - Deploy token to Base
-- `scripts/mint.js` - Mint test tokens
+- `hardhat.config.cjs` - Hardhat configuration
+- `scripts/deploy.cjs` - Deploy token to Base
+- `scripts/mint.cjs` - Mint test tokens
 
 ### Documentation
 - `QUICKSTART.md` - 30-minute setup guide
