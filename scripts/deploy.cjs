@@ -1,53 +1,49 @@
 const hre = require("hardhat");
-const fs = require("fs");
 
 async function main() {
-  console.log("🚀 Deploying ThreviaToken to", hre.network.name);
+  console.log("🚀 Deploying ThreviaToken to Base Sepolia...\n");
 
-  // Get deployer account
-  const [deployer] = await hre.ethers.getSigners();
-  console.log(`📝 Deployer: ${deployer.address}`);
-
-  // Deploy contract
   const ThreviaToken = await hre.ethers.getContractFactory("ThreviaToken");
-  const contract = await ThreviaToken.deploy();
-  await contract.waitForDeployment();
+  const token = await ThreviaToken.deploy();
 
-  const deploymentAddress = await contract.getAddress();
-  console.log(`✅ ThreviaToken deployed to: ${deploymentAddress}`);
+  await token.deploymentTransaction().wait(1);
 
-  // Create deployments directory if it doesn't exist
-  if (!fs.existsSync("./deployments")) {
-    fs.mkdirSync("./deployments");
+  console.log("✅ ThreviaToken deployed successfully!");
+  console.log("📋 Save this information:\n");
+  console.log("   Contract Address: " + token.target);
+  console.log("   Network: Base Sepolia (Testnet)");
+  console.log("   Chain ID: 84532");
+  console.log("   RPC URL: https://sepolia.base.org");
+  console.log("   Symbol: THREV");
+  console.log("   Decimals: 18\n");
+
+  console.log("🔍 Waiting for block confirmations before verification...");
+  await token.deploymentTransaction().wait(6);
+
+  // Attempt to verify
+  try {
+    console.log("\n🔐 Verifying contract on BaseScan...");
+    await hre.run("verify:verify", {
+      address: token.target,
+      constructorArguments: [],
+    });
+    console.log("✅ Contract verified on BaseScan!");
+  } catch (error) {
+    console.log("⚠️  Verification skipped. You can verify manually on BaseScan.");
   }
 
-  // Save deployment info
-  const deploymentInfo = {
-    contract: "ThreviaToken",
-    network: hre.network.name,
-    address: deploymentAddress,
-    deployer: deployer.address,
-    timestamp: new Date().toISOString(),
-    blockNumber: await hre.ethers.provider.getBlockNumber(),
-  };
-
-  fs.writeFileSync(
-    `./deployments/${hre.network.name}.json`,
-    JSON.stringify(deploymentInfo, null, 2)
-  );
-
-  console.log(`📄 Deployment saved to deployments/${hre.network.name}.json`);
-
-  // Verify deployment
-  const totalSupply = await contract.totalSupply();
-  console.log(`📊 Total Supply: ${hre.ethers.formatUnits(totalSupply, 18)} THREV`);
-
-  return deploymentAddress;
+  // Return contract address
+  return token.target;
 }
 
 main()
-  .then(() => process.exit(0))
+  .then((address) => {
+    console.log("\n✨ Deployment complete!");
+    console.log("🎉 Update your backend .env with:");
+    console.log(`THREVIA_TOKEN_ADDRESS=${address}`);
+    process.exit(0);
+  })
   .catch((error) => {
-    console.error(error);
+    console.error("❌ Deployment failed:", error);
     process.exit(1);
   });

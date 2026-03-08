@@ -52,7 +52,7 @@ threvia-app/
 │   ├── scripts/
 │   │   ├── deploy.js                 (Deploy to Base Sepolia/Mainnet)
 │   │   └── mint.js                   (Mint test tokens)
-│   └── hardhat.config.js             (Hardhat configuration)
+│   └── hardhat.config.cjs             (Hardhat configuration)
 │
 ├── 🛠️ CONFIGURATION
 │   ├── package.json                  (Frontend package.json)
@@ -147,7 +147,7 @@ Token Purchase
 | middleware/auth.js | JWT verification | Node.js |
 | ThreviaToken.sol | ERC-20 contract | Solidity |
 | deploy.js | Contract deployment | Hardhat |
-| hardhat.config.js | Hardhat setup | JavaScript |
+| hardhat.config.cjs | Hardhat setup | JavaScript |
 
 ## 📦 Key Dependencies
 

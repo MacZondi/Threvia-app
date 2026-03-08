@@ -82,14 +82,14 @@ export default function DocumentStorage({ user }) {
 
   // Get file icon
   const getFileIcon = (type) => {
-    if (type.includes('pdf')) return '📄';
-    if (type.includes('image')) return '🖼️';
-    if (type.includes('document') || type.includes('word')) return '📃';
-    if (type.includes('sheet') || type.includes('excel')) return '📊';
-    if (type.includes('presentation')) return '📽️';
-    if (type.includes('video')) return '🎥';
-    if (type.includes('audio')) return '🎵';
-    return '📦';
+    if (type.includes('pdf')) return 'PDF';
+    if (type.includes('image')) return 'IMG';
+    if (type.includes('document') || type.includes('word')) return 'DOC';
+    if (type.includes('sheet') || type.includes('excel')) return 'XLS';
+    if (type.includes('presentation')) return 'PPT';
+    if (type.includes('video')) return 'VID';
+    if (type.includes('audio')) return 'AUD';
+    return 'FILE';
   };
 
   const M = {
@@ -97,97 +97,115 @@ export default function DocumentStorage({ user }) {
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
-      background: 'rgba(20,30,48,0.8)',
-      color: '#e8f0fe',
-      fontFamily: '"Sora", sans-serif',
-      backdropFilter: 'blur(10px)',
+      background: 'transparent',
+      color: '#10223a',
+      fontFamily: "'Manrope', sans-serif",
     },
     header: {
-      padding: '24px',
-      borderBottom: '1px solid rgba(0,217,245,0.2)',
+      padding: '18px',
+      borderBottom: '1px solid rgba(16,34,58,0.1)',
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
     },
     title: {
-      fontSize: 24,
+      fontSize: 30,
       fontWeight: 700,
       margin: 0,
+      color: '#0f2540',
+      fontFamily: "'Space Grotesk', sans-serif",
     },
     tabs: {
       display: 'flex',
+      flexWrap: 'wrap',
       gap: '8px',
-      padding: '16px 24px',
-      borderBottom: '1px solid rgba(0,217,245,0.1)',
+      padding: '12px 18px',
+      borderBottom: '1px solid rgba(16,34,58,0.1)',
     },
     tab: {
-      padding: '8px 16px',
-      borderRadius: '8px',
-      border: 'none',
-      background: 'rgba(0,217,245,0.1)',
-      color: 'rgba(232,240,254,0.6)',
+      padding: '9px 14px',
+      borderRadius: '999px',
+      border: '1px solid rgba(16,34,58,0.12)',
+      background: 'rgba(255,255,255,0.72)',
+      color: 'rgba(16,34,58,0.66)',
       cursor: 'pointer',
-      fontSize: 12,
+      fontSize: 12.5,
       fontWeight: 600,
-      transition: 'all 0.3s',
-      '&:hover': {
-        background: 'rgba(0,217,245,0.2)',
-      },
     },
     tabActive: {
-      background: 'rgba(0,217,245,0.3)',
-      color: '#00d9f5',
+      background: 'rgba(10,158,159,0.12)',
+      color: '#0a9e9f',
+      borderColor: 'rgba(10,158,159,0.4)',
     },
     content: {
       flex: 1,
       overflow: 'auto',
-      padding: '24px',
+      padding: '18px',
     },
     uploadArea: {
-      border: '2px dashed rgba(0,217,245,0.3)',
-      borderRadius: '12px',
+      border: '2px dashed rgba(16,34,58,0.24)',
+      borderRadius: '14px',
       padding: '32px 24px',
       textAlign: 'center',
       cursor: 'pointer',
-      transition: 'all 0.3s',
+      transition: 'all 0.2s',
       marginBottom: '24px',
-      '&:hover': {
-        borderColor: 'rgba(0,217,245,0.6)',
-        background: 'rgba(0,217,245,0.05)',
-      },
+      background: 'rgba(255,255,255,0.78)',
     },
     uploadIcon: {
-      fontSize: 48,
-      marginBottom: '12px',
+      width: 78,
+      height: 78,
+      margin: '0 auto 12px',
+      borderRadius: '20px',
+      border: '1px solid rgba(16,34,58,0.16)',
+      background: 'rgba(255,255,255,0.92)',
+      fontSize: 12,
+      fontWeight: 700,
+      letterSpacing: '1px',
+      display: 'grid',
+      placeItems: 'center',
+      color: '#0f2540',
+      fontFamily: "'Space Grotesk', sans-serif",
     },
     uploadText: {
       fontSize: 14,
-      color: 'rgba(232,240,254,0.7)',
+      color: 'rgba(16,34,58,0.75)',
       margin: '8px 0',
     },
     uploadHint: {
       fontSize: 12,
-      color: 'rgba(232,240,254,0.4)',
+      color: 'rgba(16,34,58,0.58)',
       marginTop: '8px',
     },
     documentList: {
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
       gap: '16px',
     },
     documentCard: {
-      background: 'rgba(0,217,245,0.08)',
-      border: '1px solid rgba(0,217,245,0.2)',
-      borderRadius: '12px',
+      background: 'rgba(255,255,255,0.78)',
+      border: '1px solid rgba(16,34,58,0.14)',
+      borderRadius: '14px',
       padding: '16px',
-      transition: 'all 0.3s',
+      transition: 'all 0.2s',
     },
     documentCardHover: {
-      borderColor: 'rgba(0,217,245,0.4)',
-      background: 'rgba(0,217,245,0.12)',
+      borderColor: 'rgba(10,158,159,0.45)',
+      background: 'rgba(10,158,159,0.12)',
     },
     documentIcon: {
-      fontSize: 32,
+      width: 46,
+      height: 46,
+      borderRadius: '12px',
+      border: '1px solid rgba(16,34,58,0.14)',
+      background: 'rgba(255,255,255,0.9)',
+      fontSize: 11,
+      fontWeight: 700,
+      letterSpacing: '.5px',
+      display: 'grid',
+      placeItems: 'center',
+      color: '#0f2540',
+      fontFamily: "'Space Grotesk', sans-serif",
       marginBottom: '12px',
     },
     documentName: {
@@ -198,7 +216,7 @@ export default function DocumentStorage({ user }) {
     },
     documentMeta: {
       fontSize: 11,
-      color: 'rgba(232,240,254,0.5)',
+      color: 'rgba(16,34,58,0.58)',
       marginBottom: '12px',
       lineHeight: 1.4,
     },
@@ -214,30 +232,37 @@ export default function DocumentStorage({ user }) {
       fontSize: 11,
       fontWeight: 600,
       cursor: 'pointer',
-      transition: 'all 0.3s',
+      transition: 'all 0.2s',
     },
     downloadBtn: {
-      background: 'rgba(0,217,245,0.3)',
-      color: '#00d9f5',
-      '&:hover': {
-        background: 'rgba(0,217,245,0.5)',
-      },
+      background: 'rgba(12,123,198,0.18)',
+      color: '#0d7ec7',
+      border: '1px solid rgba(12,123,198,0.3)',
     },
     deleteBtn: {
-      background: 'rgba(255,68,68,0.3)',
-      color: '#ff4444',
-      '&:hover': {
-        background: 'rgba(255,68,68,0.5)',
-      },
+      background: 'rgba(191,84,63,0.12)',
+      color: '#b0523d',
+      border: '1px solid rgba(191,84,63,0.3)',
     },
     emptyState: {
       textAlign: 'center',
       padding: '48px 24px',
-      color: 'rgba(232,240,254,0.4)',
+      color: 'rgba(16,34,58,0.56)',
     },
     emptyIcon: {
-      fontSize: 64,
-      marginBottom: '16px',
+      width: 96,
+      height: 96,
+      margin: '0 auto 16px',
+      borderRadius: '24px',
+      border: '1px solid rgba(16,34,58,0.14)',
+      background: 'rgba(255,255,255,0.9)',
+      fontSize: 13,
+      fontWeight: 700,
+      letterSpacing: '1px',
+      display: 'grid',
+      placeItems: 'center',
+      color: '#0f2540',
+      fontFamily: "'Space Grotesk', sans-serif",
     },
     stats: {
       display: 'grid',
@@ -246,21 +271,22 @@ export default function DocumentStorage({ user }) {
       marginBottom: '24px',
     },
     statCard: {
-      background: 'rgba(0,217,245,0.1)',
-      border: '1px solid rgba(0,217,245,0.2)',
-      borderRadius: '8px',
+      background: 'rgba(255,255,255,0.78)',
+      border: '1px solid rgba(16,34,58,0.14)',
+      borderRadius: '10px',
       padding: '16px',
       textAlign: 'center',
     },
     statValue: {
       fontSize: 24,
       fontWeight: 700,
-      color: '#00d9f5',
+      color: '#0a9e9f',
       marginBottom: '4px',
+      fontFamily: "'Space Grotesk', sans-serif",
     },
     statLabel: {
       fontSize: 12,
-      color: 'rgba(232,240,254,0.5)',
+      color: 'rgba(16,34,58,0.6)',
     },
   };
 
@@ -272,8 +298,8 @@ export default function DocumentStorage({ user }) {
     <div style={M.wrap}>
       {/* Header */}
       <div style={M.header}>
-        <h1 style={M.title}>📚 My Documents</h1>
-        <div style={{ fontSize: 12, color: 'rgba(232,240,254,0.5)' }}>
+        <h1 style={M.title}>My Documents</h1>
+        <div style={{ fontSize: 12, color: 'rgba(16,34,58,0.58)' }}>
           {documents.length} document{documents.length !== 1 ? 's' : ''}
         </div>
       </div>
@@ -287,7 +313,7 @@ export default function DocumentStorage({ user }) {
           }}
           onClick={() => setActiveTab('documents')}
         >
-          📂 My Documents
+          Documents
         </button>
         <button
           style={{
@@ -296,7 +322,7 @@ export default function DocumentStorage({ user }) {
           }}
           onClick={() => setActiveTab('upload')}
         >
-          ⬆️ Upload
+          Upload
         </button>
         <button
           style={{
@@ -305,7 +331,7 @@ export default function DocumentStorage({ user }) {
           }}
           onClick={() => setActiveTab('stats')}
         >
-          📊 Statistics
+          Statistics
         </button>
       </div>
 
@@ -326,7 +352,7 @@ export default function DocumentStorage({ user }) {
                 handleFileUpload(event);
               }
             }} onDragOver={(e) => e.preventDefault()}>
-              <div style={M.uploadIcon}>📤</div>
+              <div style={M.uploadIcon}>UPLOAD</div>
               <div style={M.uploadText}>
                 Drag and drop your files here or click to select
               </div>
@@ -349,7 +375,7 @@ export default function DocumentStorage({ user }) {
                 <div
                   style={{
                     height: '6px',
-                    background: 'rgba(0,217,245,0.1)',
+                    background: 'rgba(16,34,58,0.1)',
                     borderRadius: '3px',
                     overflow: 'hidden',
                   }}
@@ -357,7 +383,7 @@ export default function DocumentStorage({ user }) {
                   <div
                     style={{
                       height: '100%',
-                      background: 'linear-gradient(90deg, #00d9f5, #0099cc)',
+                      background: 'linear-gradient(90deg, #0a9e9f, #0d7ec7)',
                       width: `${uploadProgress}%`,
                       transition: 'width 0.2s',
                     }}
@@ -386,7 +412,7 @@ export default function DocumentStorage({ user }) {
                           style={{ ...M.button, ...M.downloadBtn }}
                           onClick={() => downloadDocument(doc)}
                         >
-                          ⬇️ Download
+                          Download
                         </button>
                       </div>
                     </div>
@@ -402,7 +428,7 @@ export default function DocumentStorage({ user }) {
           <div>
             {documents.length === 0 ? (
               <div style={M.emptyState}>
-                <div style={M.emptyIcon}>📭</div>
+                <div style={M.emptyIcon}>EMPTY</div>
                 <div>No documents yet</div>
                 <div style={{ fontSize: 12, marginTop: '8px' }}>
                   Upload your first document to get started
@@ -427,13 +453,13 @@ export default function DocumentStorage({ user }) {
                       padding: '6px 12px',
                       fontSize: 11,
                       borderRadius: '6px',
-                      border: 'none',
-                      background: 'rgba(0,217,245,0.3)',
-                      color: '#00d9f5',
+                      border: '1px solid rgba(12,123,198,0.3)',
+                      background: 'rgba(12,123,198,0.18)',
+                      color: '#0d7ec7',
                       cursor: 'pointer',
                     }}
                   >
-                    ⬆️ Upload New
+                    Upload New
                   </button>
                 </div>
                 <div style={M.documentList}>
@@ -442,12 +468,12 @@ export default function DocumentStorage({ user }) {
                       key={doc.id}
                       style={M.documentCard}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(0,217,245,0.4)';
-                        e.currentTarget.style.background = 'rgba(0,217,245,0.12)';
+                        e.currentTarget.style.borderColor = 'rgba(10,158,159,0.45)';
+                        e.currentTarget.style.background = 'rgba(10,158,159,0.12)';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(0,217,245,0.2)';
-                        e.currentTarget.style.background = 'rgba(0,217,245,0.08)';
+                        e.currentTarget.style.borderColor = 'rgba(16,34,58,0.14)';
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.78)';
                       }}
                     >
                       <div style={M.documentIcon}>
@@ -462,13 +488,13 @@ export default function DocumentStorage({ user }) {
                           style={{ ...M.button, ...M.downloadBtn }}
                           onClick={() => downloadDocument(doc)}
                         >
-                          ⬇️ Download
+                          Download
                         </button>
                         <button
                           style={{ ...M.button, ...M.deleteBtn }}
                           onClick={() => deleteDocument(doc.id)}
                         >
-                          🗑️ Delete
+                          Delete
                         </button>
                       </div>
                     </div>
@@ -519,17 +545,17 @@ export default function DocumentStorage({ user }) {
               }}
             >
               {[
-                { icon: '📄', name: 'PDF' },
-                { icon: '🖼️', name: 'Images' },
-                { icon: '📃', name: 'Documents' },
-                { icon: '📊', name: 'Spreadsheets' },
-                { icon: '📽️', name: 'Presentations' },
+                { icon: 'PDF', name: 'PDF' },
+                { icon: 'IMG', name: 'Images' },
+                { icon: 'DOC', name: 'Documents' },
+                { icon: 'XLS', name: 'Spreadsheets' },
+                { icon: 'PPT', name: 'Presentations' },
               ].map((type) => (
                 <div
                   key={type.name}
                   style={{
-                    background: 'rgba(0,217,245,0.1)',
-                    border: '1px solid rgba(0,217,245,0.2)',
+                    background: 'rgba(255,255,255,0.78)',
+                    border: '1px solid rgba(16,34,58,0.14)',
                     borderRadius: '8px',
                     padding: '12px',
                     textAlign: 'center',

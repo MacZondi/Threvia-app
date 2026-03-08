@@ -50,7 +50,7 @@ EOF
 
 ```bash
 # Deploy to Base Sepolia testnet
-npx hardhat run scripts/deploy.js --network baseSepolia
+npx hardhat run scripts/deploy.cjs --network baseSepolia
 ```
 
 **Expected Output:**
@@ -70,7 +70,7 @@ THREVIA_TOKEN_ADDRESS=0x1234567890abcdef1234567890abcdef12345678
 ### Step 5: Mint Test Tokens (Optional)
 
 ```bash
-npx hardhat run scripts/mint.js --network baseSepolia 0x1234567890abcdef1234567890abcdef12345678 1000000
+npx hardhat run scripts/mint.cjs --network baseSepolia 0x1234567890abcdef1234567890abcdef12345678 1000000
 ```
 
 This mints 1,000,000 THREV tokens to your wallet.
@@ -320,7 +320,7 @@ npm run dev
 
 ```bash
 # After testing on Sepolia, deploy to mainnet:
-npx hardhat run scripts/deploy.js --network baseMainnet
+npx hardhat run scripts/deploy.cjs --network baseMainnet
 ```
 
 ### Backend

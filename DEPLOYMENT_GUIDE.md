@@ -8,13 +8,13 @@
 # Install Hardhat and plugins
 npm install --save-dev hardhat @nomicfoundation/hardhat-toolbox @nomicfoundation/hardhat-ethers ethers
 
-# Initialize Hardhat project (choose "Create an empty hardhat.config.js")
+# Initialize Hardhat project (choose "Create an empty hardhat.config.cjs")
 npx hardhat
 ```
 
 ### Step 2: Configure Hardhat for Base
 
-Create or update `hardhat.config.js`:
+Create or update `hardhat.config.cjs`:
 
 ```javascript
 require("@nomicfoundation/hardhat-toolbox");
@@ -86,7 +86,7 @@ cp contracts/ThreviaToken.sol contracts/ThreviaToken.sol
 
 ### Step 4: Create Deployment Script
 
-Create `scripts/deploy.js`:
+Create `scripts/deploy.cjs`:
 
 ```javascript
 const hre = require("hardhat");
@@ -138,7 +138,7 @@ main()
 npm install dotenv
 
 # Deploy to Sepolia testnet
-npx hardhat run scripts/deploy.js --network baseSepolia
+npx hardhat run scripts/deploy.cjs --network baseSepolia
 ```
 
 **Expected Output:**
@@ -148,7 +148,7 @@ npx hardhat run scripts/deploy.js --network baseSepolia
 
 ### Step 6: Mint Test Tokens (Optional)
 
-Create `scripts/mint.js`:
+Create `scripts/mint.cjs`:
 
 ```javascript
 const hre = require("hardhat");
@@ -184,7 +184,7 @@ Once tested on Sepolia, deploy to mainnet:
 
 ```bash
 # Make sure you have ETH for gas fees on Base mainnet
-npx hardhat run scripts/deploy.js --network baseMainnet
+npx hardhat run scripts/deploy.cjs --network baseMainnet
 ```
 
 ---

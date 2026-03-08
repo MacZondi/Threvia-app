@@ -20,6 +20,8 @@ PORT=5000
 NODE_ENV=development
 BASE_RPC_URL=https://sepolia.base.org
 THREVIA_TOKEN_ADDRESS=0x1234567890abcdef1234567890abcdef12345678
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+ANTHROPIC_MODEL=claude-sonnet-4-20250514
 ```
 
 ### 3. Install PostgreSQL (if not already installed)
@@ -175,6 +177,27 @@ Response:
 }
 ```
 
+### Chat
+
+**POST /api/chat**
+```json
+{
+  "messages": [
+    { "role": "user", "content": "How do I manage exam stress?" }
+  ],
+  "system": "You are the Threvia Intelligence Engine...",
+  "max_tokens": 700
+}
+```
+
+Response:
+```json
+{
+  "reply": "A practical first step is to set a 25-minute study block...",
+  "model": "claude-sonnet-4-20250514"
+}
+```
+
 ## Authentication
 
 Include JWT token in Authorization header:
@@ -214,4 +237,3 @@ const response = await fetch('http://localhost:5000/api/auth/login', {
 const data = await response.json();
 localStorage.setItem('authToken', data.token);
 ```
-

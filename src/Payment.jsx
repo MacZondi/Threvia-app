@@ -9,6 +9,7 @@ export function PaymentComponent() {
 
   // Your recipient wallet address (update with your address)
   const RECIPIENT_ADDRESS = '0xYourRecipientAddressHere';
+  const DONATION_AMOUNT_ZAR = 100;
 
   const handlePayment = async () => {
     setLoading(true);
@@ -17,7 +18,7 @@ export function PaymentComponent() {
     try {
       // Process payment
       const payment = await pay({
-        amount: '5.00',           // USD amount
+        amount: String(DONATION_AMOUNT_ZAR),
         to: RECIPIENT_ADDRESS,    // recipient address
         testnet: false            // set to false for mainnet
       });
@@ -32,7 +33,7 @@ export function PaymentComponent() {
       });
       
       if (status === 'completed') {
-        setPaymentStatus(`✅ Payment confirmed!`);
+        setPaymentStatus(`Payment confirmed.`);
         console.log('Payment confirmed!');
       }
     } catch (err) {
@@ -52,7 +53,7 @@ export function PaymentComponent() {
 
       <div style={styles.content}>
         <div style={styles.paymentCard}>
-          <div style={styles.amount}>$5.00 USDC</div>
+          <div style={styles.amount}>R {DONATION_AMOUNT_ZAR}</div>
           <p style={styles.description}>
             Your donation helps us provide anonymous, judgment-free health guidance to thousands of young South Africans.
           </p>

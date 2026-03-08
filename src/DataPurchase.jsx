@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { pay } from '@base-org/account';
 
 export function DataPurchase({ userAddress, userBucks, onPurchaseComplete }) {
@@ -6,7 +6,7 @@ export function DataPurchase({ userAddress, userBucks, onPurchaseComplete }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState('usdc'); // 'usdc' or 'bucks'
+  const [paymentMethod, setPaymentMethod] = useState('zar'); // 'zar' or 'bucks'
 
   // Data packages available for purchase
   const packages = [
@@ -14,9 +14,9 @@ export function DataPurchase({ userAddress, userBucks, onPurchaseComplete }) {
       id: 'small',
       name: '500MB Data',
       dataSize: '500MB',
-      usdcPrice: '2.50',
+      zarPrice: 49,
       bucksPrice: 250,
-      icon: '📱',
+      icon: '500',
       color: '#00f5a0',
       description: '500MB high-speed data valid for 30 days',
     },
@@ -24,9 +24,9 @@ export function DataPurchase({ userAddress, userBucks, onPurchaseComplete }) {
       id: 'medium',
       name: '2GB Data',
       dataSize: '2GB',
-      usdcPrice: '8.00',
+      zarPrice: 149,
       bucksPrice: 800,
-      icon: '📲',
+      icon: '2GB',
       color: '#00bcd4',
       description: '2GB high-speed data valid for 30 days',
     },
@@ -34,9 +34,9 @@ export function DataPurchase({ userAddress, userBucks, onPurchaseComplete }) {
       id: 'large',
       name: '5GB Data',
       dataSize: '5GB',
-      usdcPrice: '18.00',
+      zarPrice: 329,
       bucksPrice: 1800,
-      icon: '📡',
+      icon: '5GB',
       color: '#00d9f5',
       description: '5GB high-speed data valid for 60 days',
     },
@@ -44,9 +44,9 @@ export function DataPurchase({ userAddress, userBucks, onPurchaseComplete }) {
       id: 'premium',
       name: 'Unlimited Data',
       dataSize: 'Unlimited',
-      usdcPrice: '50.00',
+      zarPrice: 899,
       bucksPrice: 5000,
-      icon: '🚀',
+      icon: 'MAX',
       color: '#00f5a0',
       description: 'Unlimited data for 30 days - premium access',
     },
@@ -70,7 +70,7 @@ export function DataPurchase({ userAddress, userBucks, onPurchaseComplete }) {
 
       // Show success
       setSuccess(
-        `✅ Successfully purchased ${selectedPackage.dataSize}! Check your notifications for activation details.`
+        `Successfully purchased ${selectedPackage.dataSize}. Check notifications for activation details.`
       );
 
       // Notify parent component
@@ -94,16 +94,16 @@ export function DataPurchase({ userAddress, userBucks, onPurchaseComplete }) {
     }
   };
 
-  const handleUSDCPayment = async () => {
+  const handleZARPayment = async () => {
     if (!selectedPackage) return;
 
     setLoading(true);
     setError(null);
 
     try {
-      // Process USDC payment with Base Pay
+      // Process payment with Base Pay
       const payment = await pay({
-        amount: selectedPackage.usdcPrice,
+        amount: String(selectedPackage.zarPrice),
         to: '0xYourPaymentWalletAddress', // Replace with your wallet
         testnet: false, // Set to true for testnet
       });
@@ -111,14 +111,14 @@ export function DataPurchase({ userAddress, userBucks, onPurchaseComplete }) {
       console.log(`Payment sent! Transaction ID: ${payment.id}`);
 
       setSuccess(
-        `✅ Payment received! Your ${selectedPackage.dataSize} data package is being activated...`
+        `Payment received. Your ${selectedPackage.dataSize} data package is being activated.`
       );
 
       // Notify parent component
       if (onPurchaseComplete) {
         onPurchaseComplete({
           package: selectedPackage,
-          paymentMethod: 'usdc',
+          paymentMethod: 'zar',
           transactionId: payment.id,
         });
       }
@@ -138,14 +138,14 @@ export function DataPurchase({ userAddress, userBucks, onPurchaseComplete }) {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h2 style={styles.title}>🌐 Buy Data</h2>
-        <p style={styles.subtitle}>Use Threvia Bucks or USDC to unlock high-speed data</p>
+        <h2 style={styles.title}>Data Packages</h2>
+        <p style={styles.subtitle}>Use Threvia Bucks or Rand to unlock high-speed data</p>
       </div>
 
       {/* Bucks Balance Display */}
       <div style={styles.balanceCard}>
         <div style={styles.balanceLeft}>
-          <div style={styles.balanceIcon}>💰</div>
+          <div style={styles.balanceIcon}>TB</div>
           <div>
             <div style={styles.balanceLabel}>Threvia Bucks</div>
             <div style={styles.balanceAmount}>{userBucks}</div>
@@ -165,19 +165,19 @@ export function DataPurchase({ userAddress, userBucks, onPurchaseComplete }) {
             style={{
               ...styles.packageCard,
               ...(selectedPackage?.id === pkg.id ? styles.packageCardSelected : {}),
-              borderColor: selectedPackage?.id === pkg.id ? pkg.color : 'rgba(255,255,255,0.1)',
+              borderColor: selectedPackage?.id === pkg.id ? pkg.color : 'rgba(16,34,58,0.12)',
               background:
-                selectedPackage?.id === pkg.id ? `${pkg.color}15` : 'rgba(255,255,255,0.03)',
+                selectedPackage?.id === pkg.id ? `${pkg.color}15` : 'rgba(255,255,255,0.76)',
             }}
           >
-            <div style={{ ...styles.packageIcon, fontSize: '32px' }}>{pkg.icon}</div>
+            <div style={styles.packageIcon}>{pkg.icon}</div>
             <div style={styles.packageName}>{pkg.name}</div>
             <div style={styles.packageDesc}>{pkg.description}</div>
 
             <div style={styles.pricesRow}>
               <div style={styles.priceItem}>
-                <div style={styles.priceLabel}>USDC</div>
-                <div style={styles.priceValue}>${pkg.usdcPrice}</div>
+                <div style={styles.priceLabel}>ZAR</div>
+                <div style={styles.priceValue}>R {pkg.zarPrice}</div>
               </div>
               <div style={styles.priceItem}>
                 <div style={styles.priceLabel}>BUCKS</div>
@@ -207,12 +207,12 @@ export function DataPurchase({ userAddress, userBucks, onPurchaseComplete }) {
             <span
               style={{
                 ...styles.methodHint,
-                color: userBucks >= selectedPackage.bucksPrice ? '#00f5a0' : '#ff4444',
+                color: userBucks >= selectedPackage.bucksPrice ? '#0a9e9f' : '#b0523d',
               }}
             >
               {userBucks >= selectedPackage.bucksPrice
-                ? '✅ Sufficient balance'
-                : '❌ Insufficient balance'}
+                ? 'Sufficient balance'
+                : 'Insufficient balance'}
             </span>
           </div>
 
@@ -220,20 +220,20 @@ export function DataPurchase({ userAddress, userBucks, onPurchaseComplete }) {
             <label style={styles.methodLabel}>
               <input
                 type="radio"
-                value="usdc"
-                checked={paymentMethod === 'usdc'}
+                value="zar"
+                checked={paymentMethod === 'zar'}
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 style={styles.radio}
               />
-              <span>USDC (${selectedPackage.usdcPrice})</span>
+              <span>Rand (R {selectedPackage.zarPrice})</span>
             </label>
-            <span style={styles.methodHint}>One-tap payment</span>
+            <span style={styles.methodHint}>Secure checkout</span>
           </div>
 
           <div style={styles.buttonRow}>
             <button
               onClick={
-                paymentMethod === 'bucks' ? handleBucksPayment : handleUSDCPayment
+                paymentMethod === 'bucks' ? handleBucksPayment : handleZARPayment
               }
               disabled={
                 loading ||
@@ -253,7 +253,7 @@ export function DataPurchase({ userAddress, userBucks, onPurchaseComplete }) {
                 ? 'Processing...'
                 : paymentMethod === 'bucks'
                   ? `Buy with ${selectedPackage.bucksPrice} Bucks`
-                  : `Buy for $${selectedPackage.usdcPrice}`}
+                  : `Buy for R ${selectedPackage.zarPrice}`}
             </button>
             <button
               onClick={() => {
@@ -277,35 +277,38 @@ export function DataPurchase({ userAddress, userBucks, onPurchaseComplete }) {
 
 const styles = {
   container: {
-    padding: '20px',
-    background: 'linear-gradient(160deg,#06080f 0%,#0a1220 100%)',
-    color: '#e8f0fe',
-    fontFamily: "'Sora',sans-serif",
-    minHeight: '100vh',
+    padding: '18px',
+    color: '#10223a',
+    fontFamily: "'Manrope',sans-serif",
+    minHeight: '100%',
   },
   header: {
     textAlign: 'center',
-    marginBottom: '28px',
+    marginBottom: '20px',
   },
   title: {
-    fontSize: '28px',
+    fontSize: '30px',
     fontWeight: '700',
-    marginBottom: '8px',
-    color: '#00f5a0',
+    margin: '0 0 8px',
+    color: '#0f2540',
+    fontFamily: "'Space Grotesk', sans-serif",
   },
   subtitle: {
     fontSize: '14px',
-    color: 'rgba(232,240,254,0.6)',
+    color: 'rgba(16,34,58,0.66)',
+    margin: 0,
   },
   balanceCard: {
-    background: 'rgba(0,245,160,0.08)',
-    border: '1px solid rgba(0,245,160,0.2)',
+    background:
+      'linear-gradient(120deg,rgba(255,255,255,0.88) 0%,rgba(230,245,245,0.78) 55%,rgba(255,242,227,0.78) 100%)',
+    border: '1px solid rgba(16,34,58,0.12)',
     borderRadius: '16px',
     padding: '16px',
-    marginBottom: '24px',
+    marginBottom: '20px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: '12px',
   },
   balanceLeft: {
     display: 'flex',
@@ -313,23 +316,34 @@ const styles = {
     gap: '12px',
   },
   balanceIcon: {
-    fontSize: '32px',
+    width: '42px',
+    height: '42px',
+    borderRadius: '12px',
+    border: '1px solid rgba(16,34,58,0.14)',
+    background: 'rgba(255,255,255,0.9)',
+    display: 'grid',
+    placeItems: 'center',
+    fontSize: '13px',
+    fontWeight: 700,
+    letterSpacing: '.4px',
+    color: '#10223a',
+    fontFamily: "'Space Grotesk', sans-serif",
   },
   balanceLabel: {
     fontSize: '12px',
-    color: 'rgba(232,240,254,0.5)',
+    color: 'rgba(16,34,58,0.58)',
     textTransform: 'uppercase',
     letterSpacing: '1px',
   },
   balanceAmount: {
     fontSize: '22px',
     fontWeight: '700',
-    color: '#00f5a0',
-    fontFamily: "'Space Mono',monospace",
+    color: '#0a9e9f',
+    fontFamily: "'Space Grotesk',sans-serif",
   },
   balanceHint: {
     fontSize: '12px',
-    color: 'rgba(232,240,254,0.4)',
+    color: 'rgba(16,34,58,0.62)',
     textAlign: 'right',
     maxWidth: '140px',
   },
@@ -339,14 +353,15 @@ const styles = {
   },
   packagesGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
     gap: '12px',
-    marginBottom: '28px',
+    marginBottom: '20px',
   },
   packageCard: {
     padding: '16px',
     borderRadius: '14px',
-    border: '1.5px solid rgba(255,255,255,0.1)',
+    border: '1.5px solid rgba(16,34,58,0.12)',
+    background: 'rgba(255,255,255,0.76)',
     cursor: 'pointer',
     transition: 'all 0.2s',
     display: 'flex',
@@ -356,19 +371,31 @@ const styles = {
     gap: '8px',
   },
   packageCardSelected: {
-    boxShadow: '0 0 24px rgba(0,245,160,0.2)',
+    boxShadow: '0 10px 22px rgba(16,34,58,0.16)',
   },
   packageIcon: {
     marginBottom: '4px',
+    width: '56px',
+    height: '56px',
+    borderRadius: '14px',
+    border: '1px solid rgba(16,34,58,0.14)',
+    background: 'rgba(255,255,255,0.86)',
+    display: 'grid',
+    placeItems: 'center',
+    fontFamily: "'Space Grotesk', sans-serif",
+    fontSize: '15px',
+    fontWeight: 700,
+    letterSpacing: '.5px',
+    color: '#0f2540',
   },
   packageName: {
     fontSize: '14px',
     fontWeight: '700',
-    color: '#e8f0fe',
+    color: '#10223a',
   },
   packageDesc: {
     fontSize: '11px',
-    color: 'rgba(232,240,254,0.4)',
+    color: 'rgba(16,34,58,0.56)',
     lineHeight: '1.3',
   },
   pricesRow: {
@@ -379,24 +406,24 @@ const styles = {
   },
   priceItem: {
     flex: 1,
-    background: 'rgba(0,245,160,0.1)',
+    background: 'rgba(10,158,159,0.08)',
     borderRadius: '8px',
     padding: '6px',
   },
   priceLabel: {
     fontSize: '10px',
-    color: 'rgba(232,240,254,0.4)',
+    color: 'rgba(16,34,58,0.55)',
     textTransform: 'uppercase',
   },
   priceValue: {
     fontSize: '13px',
     fontWeight: '700',
-    color: '#00f5a0',
-    fontFamily: "'Space Mono',monospace",
+    color: '#0a9e9f',
+    fontFamily: "'Space Grotesk',sans-serif",
   },
   paymentSection: {
-    background: 'rgba(0,245,160,0.05)',
-    border: '1px solid rgba(0,245,160,0.15)',
+    background: 'rgba(255,255,255,0.84)',
+    border: '1px solid rgba(16,34,58,0.12)',
     borderRadius: '16px',
     padding: '20px',
     marginBottom: '20px',
@@ -404,7 +431,7 @@ const styles = {
   paymentTitle: {
     fontSize: '16px',
     fontWeight: '700',
-    color: '#fff',
+    color: '#0f2540',
     marginBottom: '16px',
   },
   methodRow: {
@@ -412,10 +439,11 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '12px',
-    background: 'rgba(255,255,255,0.04)',
+    background: 'rgba(255,255,255,0.76)',
     borderRadius: '10px',
     marginBottom: '12px',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid rgba(16,34,58,0.1)',
+    gap: '12px',
   },
   methodLabel: {
     display: 'flex',
@@ -432,7 +460,7 @@ const styles = {
   },
   methodHint: {
     fontSize: '11px',
-    color: 'rgba(232,240,254,0.5)',
+    color: 'rgba(16,34,58,0.58)',
     textAlign: 'right',
   },
   buttonRow: {
@@ -444,44 +472,44 @@ const styles = {
     flex: 1,
     padding: '12px',
     borderRadius: '10px',
-    background: 'linear-gradient(135deg,#00f5a0,#00d9f5)',
+    background: 'linear-gradient(126deg,#0a9e9f 0%,#0d7ec7 68%,#f49a50 100%)',
     border: 'none',
-    color: '#06080f',
+    color: '#fff',
     fontWeight: '700',
     fontSize: '14px',
     cursor: 'pointer',
-    fontFamily: "'Sora',sans-serif",
+    fontFamily: "'Manrope',sans-serif",
     transition: 'all 0.2s',
   },
   cancelBtn: {
     flex: 1,
     padding: '12px',
     borderRadius: '10px',
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.1)',
-    color: 'rgba(232,240,254,0.6)',
+    background: 'rgba(255,255,255,0.76)',
+    border: '1px solid rgba(16,34,58,0.14)',
+    color: 'rgba(16,34,58,0.72)',
     fontWeight: '600',
     fontSize: '14px',
     cursor: 'pointer',
-    fontFamily: "'Sora',sans-serif",
+    fontFamily: "'Manrope',sans-serif",
   },
   error: {
     marginTop: '12px',
     padding: '12px',
-    background: 'rgba(255,68,68,0.1)',
-    border: '1px solid rgba(255,68,68,0.3)',
+    background: 'rgba(191,84,63,0.1)',
+    border: '1px solid rgba(191,84,63,0.32)',
     borderRadius: '8px',
-    color: '#ff4444',
+    color: '#b0523d',
     fontSize: '13px',
     textAlign: 'center',
   },
   success: {
     marginTop: '12px',
     padding: '12px',
-    background: 'rgba(0,245,160,0.1)',
-    border: '1px solid rgba(0,245,160,0.3)',
+    background: 'rgba(10,158,159,0.1)',
+    border: '1px solid rgba(10,158,159,0.3)',
     borderRadius: '8px',
-    color: '#00f5a0',
+    color: '#0a9e9f',
     fontSize: '13px',
     textAlign: 'center',
     fontWeight: '600',

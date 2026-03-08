@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>Threvia — Demo Video</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-card: rgba(255,255,255,0.04);
+  --accent-teal: #00d4aa;
+  --accent-cyan: #00b4d8;
+  --accent-orange: #ff7a33;
+  --accent-purple: #8b5cf6;
+  --accent-pink: #ec4899;
+  --text-primary: #f0f0f5;
+  --text-secondary: rgba(240,240,245,0.6);
+  --gradient-main: linear-gradient(135deg, #00d4aa, #00b4d8, #8b5cf6);
+  --gradient-warm: linear-gradient(135deg, #ff7a33, #ec4899);
+  --gradient-cool: linear-gradient(135deg, #00d4aa, #00b4d8);
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+html, body {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
+
+/* ===== SCENE CONTAINER ===== */
+.scene {
+  position: absolute;
+  top: 0; left: 0;
+  width: 1920px;
+  height: 1080px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(1.02);
+  transition: opacity 1s ease, transform 1s ease;
+  pointer-events: none;
+  overflow: hidden;
+}
+.scene.active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+/* ===== GLOBAL BACKGROUND EFFECTS ===== */
+.bg-gradient {
+  position: absolute;
+  width: 900px; height: 900px;
+  border-radius: 50%;
+  filter: blur(180px);
+  opacity: 0.15;
+  z-index: 0;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  position: fixed;
+  bottom: 0; left: 0;
+  height: 4px;
+  background: var(--gradient-main);
+  z-index: 1000;
+  transition: width 0.3s linear;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ===== SCENE COUNTER ===== */
+.scene-counter {
+  position: fixed;
+  bottom: 24px;
+  right: 40px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-secondary);
+  z-index: 1000;
+  letter-spacing: 2px;
+}
+
+/* ===== PARTICLE CANVAS ===== */
+#particles {
+  position: fixed;
+  top: 0; left: 0;
+  width: 1920px;
+  height: 1080px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(50px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-80px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(80px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 30px rgba(0,212,170,0.2); }
+  50% { box-shadow: 0 0 60px rgba(0,212,170,0.4); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+@keyframes blink {
+  50% { border-color: transparent; }
+}
+@keyframes rotateIn {
+  from { opacity: 0; transform: rotate(-10deg) scale(0.8); }
+  to { opacity: 1; transform: rotate(0) scale(1); }
+}
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes chainLink {
+  0% { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes orbit {
+  from { transform: rotate(0deg) translateX(180px) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(180px) rotate(-360deg); }
+}
+
+.animate-on-active { opacity: 0; }
+.scene.active .animate-on-active { animation-fill-mode: forwards; }
+
+/* ===== SCENE 1 — TITLE ===== */
+.scene-1 .logo-text {
+  font-family: var(--font-display);
+  font-size: 140px;
+  font-weight: 900;
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -3px;
+  z-index: 1;
+}
+.scene-1 .tagline {
+  font-family: var(--font-body);
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  max-width: 800px;
+  text-align: center;
+  line-height: 1.6;
+  margin-top: 30px;
+  z-index: 1;
+}
+.scene-1 .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 28px;
+  border: 1px solid rgba(0,212,170,0.3);
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--accent-teal);
+  margin-top: 40px;
+  z-index: 1;
+  background: rgba(0,212,170,0.06);
+}
+.scene-1 .bg-gradient.g1 {
+  top: -200px; left: -200px;
+  background: var(--accent-teal);
+}
+.scene-1 .bg-gradient.g2 {
+  bottom: -200px; right: -200px;
+  background: var(--accent-purple);
+}
+
+/* ===== SCENE 2 — THE PROBLEM ===== */
+.scene-2 .section-label {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  color: var(--accent-orange);
+  margin-bottom: 30px;
+  z-index: 1;
+}
+.scene-2 .headline {
+  font-family: var(--font-display);
+  font-size: 64px;
+  font-weight: 800;
+  text-align: center;
+  max-width: 1100px;
+  line-height: 1.15;
+  z-index: 1;
+}
+.scene-2 .headline .highlight {
+  background: var(--gradient-warm);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.scene-2 .stats-row {
+  display: flex;
+  gap: 80px;
+  margin-top: 70px;
+  z-index: 1;
+}
+.scene-2 .stat {
+  text-align: center;
+}
+.scene-2 .stat-number {
+  font-family: var(--font-display);
+  font-size: 72px;
+  font-weight: 900;
+  background: var(--gradient-warm);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.scene-2 .stat-label {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  max-width: 200px;
+}
+
+/* ===== SCENE 3 — THE SOLUTION ===== */
+.scene-3 .section-label {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  color: var(--accent-teal);
+  margin-bottom: 30px;
+  z-index: 1;
+}
+.scene-3 .headline {
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 800;
+  text-align: center;
+  max-width: 1000px;
+  line-height: 1.2;
+  z-index: 1;
+}
+.scene-3 .headline .highlight {
+  background: var(--gradient-cool);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.scene-3 .flow-diagram {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-top: 70px;
+  z-index: 1;
+}
+.scene-3 .flow-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 30px 36px;
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  min-width: 200px;
+}
+.scene-3 .flow-icon {
+  font-size: 48px;
+}
+.scene-3 .flow-label {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+}
+.scene-3 .flow-arrow {
+  font-size: 36px;
+  color: var(--accent-teal);
+  opacity: 0.6;
+}
+
+/* ===== SCENE 4 — HOW IT WORKS ===== */
+.scene-4 .section-label {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  color: var(--accent-cyan);
+  margin-bottom: 20px;
+  z-index: 1;
+}
+.scene-4 .headline {
+  font-family: var(--font-display);
+  font-size: 60px;
+  font-weight: 800;
+  margin-bottom: 60px;
+  z-index: 1;
+}
+.scene-4 .steps-row {
+  display: flex;
+  gap: 40px;
+  z-index: 1;
+}
+.scene-4 .step-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 30px;
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 24px;
+  width: 240px;
+  text-align: center;
+  position: relative;
+  transition: transform 0.3s;
+}
+.scene-4 .step-card:hover {
+  transform: translateY(-8px);
+}
+.scene-4 .step-number {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  background: rgba(0,180,216,0.1);
+  padding: 6px 16px;
+  border-radius: 30px;
+  margin-bottom: 20px;
+}
+.scene-4 .step-icon {
+  font-size: 52px;
+  margin-bottom: 18px;
+}
+.scene-4 .step-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.scene-4 .step-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ===== SCENE 5 — APP FEATURES ===== */
+.scene-5 .section-label {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  color: var(--accent-purple);
+  margin-bottom: 20px;
+  z-index: 1;
+}
+.scene-5 .headline {
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 800;
+  margin-bottom: 60px;
+  z-index: 1;
+}
+.scene-5 .features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 280px);
+  gap: 28px;
+  z-index: 1;
+}
+.scene-5 .feature-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 24px 28px;
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  transition: border-color 0.3s, transform 0.3s;
+}
+.scene-5 .feature-card:hover {
+  border-color: rgba(139,92,246,0.3);
+  transform: translateY(-4px);
+}
+.scene-5 .feature-icon {
+  font-size: 36px;
+  flex-shrink: 0;
+}
+.scene-5 .feature-info .feature-title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+}
+.scene-5 .feature-info .feature-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* ===== SCENE 6 — PROOF OF ENGAGEMENT ===== */
+.scene-6 .section-label {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  color: var(--accent-teal);
+  margin-bottom: 30px;
+  z-index: 1;
+}
+.scene-6 .headline {
+  font-family: var(--font-display);
+  font-size: 60px;
+  font-weight: 800;
+  text-align: center;
+  max-width: 1000px;
+  line-height: 1.2;
+  z-index: 1;
+}
+.scene-6 .headline .highlight {
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.scene-6 .blockchain-visual {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: 60px;
+  z-index: 1;
+}
+.scene-6 .chain-block {
+  width: 160px;
+  height: 100px;
+  background: var(--bg-card);
+  border: 1px solid rgba(0,212,170,0.2);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-teal);
+  position: relative;
+}
+.scene-6 .chain-block .block-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+  font-weight: 400;
+}
+.scene-6 .chain-link {
+  width: 60px;
+  height: 3px;
+  background: var(--gradient-cool);
+  border-radius: 3px;
+}
+.scene-6 .sub-text {
+  font-size: 20px;
+  color: var(--text-secondary);
+  margin-top: 50px;
+  max-width: 700px;
+  text-align: center;
+  line-height: 1.6;
+  z-index: 1;
+}
+
+/* ===== SCENE 7 — TOKEN ECONOMY ===== */
+.scene-7 .section-label {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  color: var(--accent-orange);
+  margin-bottom: 30px;
+  z-index: 1;
+}
+.scene-7 .headline {
+  font-family: var(--font-display);
+  font-size: 60px;
+  font-weight: 800;
+  text-align: center;
+  z-index: 1;
+}
+.scene-7 .headline .highlight {
+  background: var(--gradient-warm);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.scene-7 .token-showcase {
+  display: flex;
+  align-items: center;
+  gap: 80px;
+  margin-top: 60px;
+  z-index: 1;
+}
+.scene-7 .token-coin {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff7a33, #ec4899, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 900;
+  color: white;
+  animation: float 4s ease-in-out infinite;
+  box-shadow: 0 0 80px rgba(255,122,51,0.3);
+}
+.scene-7 .token-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.scene-7 .token-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 20px;
+}
+.scene-7 .token-row .label {
+  color: var(--text-secondary);
+  min-width: 140px;
+}
+.scene-7 .token-row .value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ===== SCENE 8 — TARGET MARKET ===== */
+.scene-8 .section-label {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  color: var(--accent-cyan);
+  margin-bottom: 30px;
+  z-index: 1;
+}
+.scene-8 .headline {
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 800;
+  text-align: center;
+  max-width: 900px;
+  line-height: 1.2;
+  z-index: 1;
+}
+.scene-8 .headline .highlight {
+  background: var(--gradient-cool);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.scene-8 .market-cards {
+  display: flex;
+  gap: 40px;
+  margin-top: 60px;
+  z-index: 1;
+}
+.scene-8 .market-card {
+  padding: 40px 36px;
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 24px;
+  width: 340px;
+  text-align: center;
+}
+.scene-8 .market-card .card-icon {
+  font-size: 56px;
+  margin-bottom: 20px;
+}
+.scene-8 .market-card .card-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.scene-8 .market-card .card-desc {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ===== SCENE 9 — TECH STACK ===== */
+.scene-9 .section-label {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  color: var(--accent-purple);
+  margin-bottom: 20px;
+  z-index: 1;
+}
+.scene-9 .headline {
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 800;
+  margin-bottom: 60px;
+  z-index: 1;
+}
+.scene-9 .tech-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  z-index: 1;
+}
+.scene-9 .tech-category {
+  padding: 34px 30px;
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  text-align: center;
+  min-width: 300px;
+}
+.scene-9 .cat-icon {
+  font-size: 44px;
+  margin-bottom: 16px;
+}
+.scene-9 .cat-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.scene-9 .cat-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.scene-9 .cat-item {
+  font-size: 16px;
+  color: var(--text-secondary);
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.scene-9 .cat-item:last-child { border-bottom: none; }
+
+/* ===== SCENE 10 — CTA / CLOSING ===== */
+.scene-10 .logo-text {
+  font-family: var(--font-display);
+  font-size: 120px;
+  font-weight: 900;
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -2px;
+  z-index: 1;
+}
+.scene-10 .cta-text {
+  font-family: var(--font-display);
+  font-size: 44px;
+  font-weight: 600;
+  margin-top: 20px;
+  z-index: 1;
+}
+.scene-10 .cta-sub {
+  font-size: 22px;
+  color: var(--text-secondary);
+  margin-top: 20px;
+  max-width: 700px;
+  text-align: center;
+  line-height: 1.6;
+  z-index: 1;
+}
+.scene-10 .cta-button {
+  margin-top: 50px;
+  padding: 18px 60px;
+  background: var(--gradient-main);
+  border: none;
+  border-radius: 60px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: #0a0a0f;
+  cursor: pointer;
+  z-index: 1;
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+.scene-10 .location-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 30px;
+  font-size: 16px;
+  color: var(--text-secondary);
+  z-index: 1;
+}
+.scene-10 .bg-gradient.g1 {
+  top: -300px; right: -100px;
+  background: var(--accent-teal);
+  width: 700px; height: 700px;
+}
+.scene-10 .bg-gradient.g2 {
+  bottom: -300px; left: -100px;
+  background: var(--accent-purple);
+  width: 700px; height: 700px;
+}
+.scene-10 .bg-gradient.g3 {
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--accent-orange);
+  width: 500px; height: 500px;
+  opacity: 0.08;
+}
+
+/* ===== ANIMATION DELAYS ===== */
+.delay-1 { animation-delay: 0.2s !important; }
+.delay-2 { animation-delay: 0.4s !important; }
+.delay-3 { animation-delay: 0.6s !important; }
+.delay-4 { animation-delay: 0.8s !important; }
+.delay-5 { animation-delay: 1.0s !important; }
+.delay-6 { animation-delay: 1.2s !important; }
+.delay-7 { animation-delay: 1.4s !important; }
+.delay-8 { animation-delay: 1.6s !important; }
+
+.scene.active .anim-fadeInUp { animation: fadeInUp 0.8s ease forwards; }
+.scene.active .anim-fadeInDown { animation: fadeInDown 0.8s ease forwards; }
+.scene.active .anim-fadeIn { animation: fadeIn 0.8s ease forwards; }
+.scene.active .anim-scaleIn { animation: scaleIn 0.8s ease forwards; }
+.scene.active .anim-slideInLeft { animation: slideInLeft 0.8s ease forwards; }
+.scene.active .anim-slideInRight { animation: slideInRight 0.8s ease forwards; }
+.scene.active .anim-rotateIn { animation: rotateIn 0.6s ease forwards; }
+.scene.active .anim-countUp { animation: countUp 0.6s ease forwards; }
+
+/* ===== WATERMARK ===== */
+.watermark {
+  position: fixed;
+  top: 30px;
+  left: 40px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  z-index: 1000;
+  opacity: 0.5;
+}
+</style>
+</head>
+<body>
+
+<!-- Particle canvas -->
+<canvas id="particles"></canvas>
+
+<!-- Watermark -->
+<div class="watermark">THREVIA</div>
+
+<!-- Progress bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Scene counter -->
+<div class="scene-counter" id="sceneCounter">01 / 10</div>
+
+<!-- =============================== -->
+<!-- SCENE 1 — TITLE                -->
+<!-- =============================== -->
+<div class="scene scene-1 active" data-scene="1">
+  <div class="bg-gradient g1"></div>
+  <div class="bg-gradient g2"></div>
+  <div class="logo-text animate-on-active anim-scaleIn delay-1">Threvia</div>
+  <div class="tagline animate-on-active anim-fadeInUp delay-2">
+    Transforming essential internet access into a reward<br>
+    for engaging with vital health &amp; wellness education.
+  </div>
+  <div class="badge animate-on-active anim-fadeInUp delay-3">
+    ⛓️ Built on Base Blockchain — Johannesburg, South Africa
+  </div>
+</div>
+
+<!-- =============================== -->
+<!-- SCENE 2 — THE PROBLEM          -->
+<!-- =============================== -->
+<div class="scene scene-2" data-scene="2">
+  <div class="bg-gradient g1" style="top:-300px;right:-200px;background:var(--accent-orange);"></div>
+  <div class="section-label animate-on-active anim-fadeInDown delay-1">The Problem</div>
+  <div class="headline animate-on-active anim-fadeInUp delay-2">
+    Millions of youth in South Africa<br>
+    lack <span class="highlight">affordable internet</span> &amp;<br>
+    <span class="highlight">health education access</span>
+  </div>
+  <div class="stats-row animate-on-active anim-fadeInUp delay-4">
+    <div class="stat">
+      <div class="stat-number">26M+</div>
+      <div class="stat-label">South Africans without reliable internet access</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">67%</div>
+      <div class="stat-label">Youth lack consistent health information access</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">R800+</div>
+      <div class="stat-label">Average monthly cost for basic data packages</div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================== -->
+<!-- SCENE 3 — THE SOLUTION         -->
+<!-- =============================== -->
+<div class="scene scene-3" data-scene="3">
+  <div class="bg-gradient g1" style="bottom:-300px;left:-200px;background:var(--accent-teal);"></div>
+  <div class="section-label animate-on-active anim-fadeInDown delay-1">The Solution</div>
+  <div class="headline animate-on-active anim-fadeInUp delay-2">
+    <span class="highlight">Learn about health</span>,<br>
+    earn free internet access
+  </div>
+  <div class="flow-diagram">
+    <div class="flow-node animate-on-active anim-scaleIn delay-3">
+      <div class="flow-icon">📚</div>
+      <div class="flow-label">Health Module</div>
+    </div>
+    <div class="flow-arrow animate-on-active anim-fadeIn delay-4">→</div>
+    <div class="flow-node animate-on-active anim-scaleIn delay-4">
+      <div class="flow-icon">✅</div>
+      <div class="flow-label">Engagement</div>
+    </div>
+    <div class="flow-arrow animate-on-active anim-fadeIn delay-5">→</div>
+    <div class="flow-node animate-on-active anim-scaleIn delay-5">
+      <div class="flow-icon">⛓️</div>
+      <div class="flow-label">On-Chain Proof</div>
+    </div>
+    <div class="flow-arrow animate-on-active anim-fadeIn delay-6">→</div>
+    <div class="flow-node animate-on-active anim-scaleIn delay-6">
+      <div class="flow-icon">📶</div>
+      <div class="flow-label">Wi-Fi Credits</div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================== -->
+<!-- SCENE 4 — HOW IT WORKS         -->
+<!-- =============================== -->
+<div class="scene scene-4" data-scene="4">
+  <div class="bg-gradient g1" style="top:-200px;left:50%;transform:translateX(-50%);background:var(--accent-cyan);"></div>
+  <div class="section-label animate-on-active anim-fadeInDown delay-1">How It Works</div>
+  <div class="headline animate-on-active anim-fadeInUp delay-1">Four Simple Steps</div>
+  <div class="steps-row">
+    <div class="step-card animate-on-active anim-fadeInUp delay-2">
+      <div class="step-number">STEP 1</div>
+      <div class="step-icon">📖</div>
+      <div class="step-title">Learn</div>
+      <div class="step-desc">Browse interactive health &amp; wellness modules</div>
+    </div>
+    <div class="step-card animate-on-active anim-fadeInUp delay-3">
+      <div class="step-number">STEP 2</div>
+      <div class="step-icon">🎯</div>
+      <div class="step-title">Engage</div>
+      <div class="step-desc">Complete lessons, quizzes, and health challenges</div>
+    </div>
+    <div class="step-card animate-on-active anim-fadeInUp delay-4">
+      <div class="step-number">STEP 3</div>
+      <div class="step-icon">💰</div>
+      <div class="step-title">Earn</div>
+      <div class="step-desc">Receive Threvia Bucks (THREV) tokens as rewards</div>
+    </div>
+    <div class="step-card animate-on-active anim-fadeInUp delay-5">
+      <div class="step-number">STEP 4</div>
+      <div class="step-icon">🌐</div>
+      <div class="step-title">Connect</div>
+      <div class="step-desc">Redeem tokens for Wi-Fi credits &amp; data packages</div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================== -->
+<!-- SCENE 5 — APP FEATURES         -->
+<!-- =============================== -->
+<div class="scene scene-5" data-scene="5">
+  <div class="bg-gradient g1" style="top:-200px;right:-300px;background:var(--accent-purple);"></div>
+  <div class="section-label animate-on-active anim-fadeInDown delay-1">Platform Features</div>
+  <div class="headline animate-on-active anim-fadeInUp delay-1">Everything in One App</div>
+  <div class="features-grid">
+    <div class="feature-card animate-on-active anim-fadeInUp delay-2">
+      <div class="feature-icon">❤️</div>
+      <div class="feature-info">
+        <div class="feature-title">Health Tracker</div>
+        <div class="feature-desc">Log &amp; monitor vital health metrics</div>
+      </div>
+    </div>
+    <div class="feature-card animate-on-active anim-fadeInUp delay-2">
+      <div class="feature-icon">😴</div>
+      <div class="feature-info">
+        <div class="feature-title">Sleep Tracking</div>
+        <div class="feature-desc">Monitor sleep quality &amp; patterns</div>
+      </div>
+    </div>
+    <div class="feature-card animate-on-active anim-fadeInUp delay-3">
+      <div class="feature-icon">👟</div>
+      <div class="feature-info">
+        <div class="feature-title">Step Counter</div>
+        <div class="feature-desc">Track daily steps &amp; activity</div>
+      </div>
+    </div>
+    <div class="feature-card animate-on-active anim-fadeInUp delay-3">
+      <div class="feature-icon">💓</div>
+      <div class="feature-info">
+        <div class="feature-title">Heart Rate</div>
+        <div class="feature-desc">Heart health monitoring</div>
+      </div>
+    </div>
+    <div class="feature-card animate-on-active anim-fadeInUp delay-4">
+      <div class="feature-icon">💧</div>
+      <div class="feature-info">
+        <div class="feature-title">Water Intake</div>
+        <div class="feature-desc">Daily hydration tracking</div>
+      </div>
+    </div>
+    <div class="feature-card animate-on-active anim-fadeInUp delay-4">
+      <div class="feature-icon">🥗</div>
+      <div class="feature-info">
+        <div class="feature-title">Nutrition Logger</div>
+        <div class="feature-desc">Food &amp; nutrition tracking</div>
+      </div>
+    </div>
+    <div class="feature-card animate-on-active anim-fadeInUp delay-5">
+      <div class="feature-icon">📺</div>
+      <div class="feature-info">
+        <div class="feature-title">Watch &amp; Earn</div>
+        <div class="feature-desc">Earn bucks by watching content</div>
+      </div>
+    </div>
+    <div class="feature-card animate-on-active anim-fadeInUp delay-5">
+      <div class="feature-icon">📱</div>
+      <div class="feature-info">
+        <div class="feature-title">Buy Data</div>
+        <div class="feature-desc">Purchase data with tokens</div>
+      </div>
+    </div>
+    <div class="feature-card animate-on-active anim-fadeInUp delay-6">
+      <div class="feature-icon">🏆</div>
+      <div class="feature-info">
+        <div class="feature-title">Competitions</div>
+        <div class="feature-desc">Compete for top leaderboard</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================== -->
+<!-- SCENE 6 — PROOF OF ENGAGEMENT  -->
+<!-- =============================== -->
+<div class="scene scene-6" data-scene="6">
+  <div class="bg-gradient g1" style="top:50%;left:50%;transform:translate(-50%,-50%);background:var(--accent-teal);width:600px;height:600px;"></div>
+  <div class="section-label animate-on-active anim-fadeInDown delay-1">On-Chain Verification</div>
+  <div class="headline animate-on-active anim-fadeInUp delay-2">
+    <span class="highlight">Proof of Engagement</span><br>
+    Recorded On-Chain
+  </div>
+  <div class="blockchain-visual">
+    <div class="chain-block animate-on-active anim-scaleIn delay-3">
+      📚 Learn
+      <span class="block-label">Health Module</span>
+    </div>
+    <div class="chain-link animate-on-active anim-fadeIn delay-4"></div>
+    <div class="chain-block animate-on-active anim-scaleIn delay-4">
+      ✓ Verify
+      <span class="block-label">Engagement Proof</span>
+    </div>
+    <div class="chain-link animate-on-active anim-fadeIn delay-5"></div>
+    <div class="chain-block animate-on-active anim-scaleIn delay-5">
+      ⛓️ Record
+      <span class="block-label">Base Blockchain</span>
+    </div>
+    <div class="chain-link animate-on-active anim-fadeIn delay-6"></div>
+    <div class="chain-block animate-on-active anim-scaleIn delay-6">
+      🎁 Reward
+      <span class="block-label">Wi-Fi Credits</span>
+    </div>
+  </div>
+  <div class="sub-text animate-on-active anim-fadeInUp delay-7">
+    Transparent distribution of Wi-Fi credits and future loyalty rewards — all verifiable on-chain.
+  </div>
+</div>
+
+<!-- =============================== -->
+<!-- SCENE 7 — TOKEN ECONOMY        -->
+<!-- =============================== -->
+<div class="scene scene-7" data-scene="7">
+  <div class="bg-gradient g1" style="top:-200px;left:-200px;background:var(--accent-orange);"></div>
+  <div class="bg-gradient g2" style="bottom:-200px;right:-200px;background:var(--accent-pink);width:600px;height:600px;"></div>
+  <div class="section-label animate-on-active anim-fadeInDown delay-1">Token Economy</div>
+  <div class="headline animate-on-active anim-fadeInUp delay-2">
+    <span class="highlight">Threvia Bucks</span> (THREV)
+  </div>
+  <div class="token-showcase">
+    <div class="token-coin animate-on-active anim-scaleIn delay-3">T₿</div>
+    <div class="token-info animate-on-active anim-slideInRight delay-4">
+      <div class="token-row">
+        <span class="label">Standard</span>
+        <span class="value">ERC-20 Token</span>
+      </div>
+      <div class="token-row">
+        <span class="label">Blockchain</span>
+        <span class="value">Base (Ethereum L2)</span>
+      </div>
+      <div class="token-row">
+        <span class="label">Earn By</span>
+        <span class="value">Completing Health Modules</span>
+      </div>
+      <div class="token-row">
+        <span class="label">Spend On</span>
+        <span class="value">Wi-Fi Credits &amp; Data Packages</span>
+      </div>
+      <div class="token-row">
+        <span class="label">Payments</span>
+        <span class="value">THREV or USDC Accepted</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================== -->
+<!-- SCENE 8 — TARGET MARKET        -->
+<!-- =============================== -->
+<div class="scene scene-8" data-scene="8">
+  <div class="bg-gradient g1" style="top:-200px;left:-200px;background:var(--accent-cyan);"></div>
+  <div class="section-label animate-on-active anim-fadeInDown delay-1">Target Market</div>
+  <div class="headline animate-on-active anim-fadeInUp delay-2">
+    Starting in <span class="highlight">Johannesburg</span>,<br>
+    Scaling <span class="highlight">Across Africa</span>
+  </div>
+  <div class="market-cards">
+    <div class="market-card animate-on-active anim-fadeInUp delay-3">
+      <div class="card-icon">👥</div>
+      <div class="card-title">Who</div>
+      <div class="card-desc">Youth &amp; residents in peri-urban and low-income communities who lack affordable internet</div>
+    </div>
+    <div class="market-card animate-on-active anim-fadeInUp delay-4">
+      <div class="card-icon">📍</div>
+      <div class="card-title">Where</div>
+      <div class="card-desc">Johannesburg, South Africa — with plans to scale across emerging markets continent-wide</div>
+    </div>
+    <div class="market-card animate-on-active anim-fadeInUp delay-5">
+      <div class="card-icon">🎯</div>
+      <div class="card-title">Why</div>
+      <div class="card-desc">A self-sustaining ecosystem linking health education to internet access — creating lasting impact</div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================== -->
+<!-- SCENE 9 — TECH STACK           -->
+<!-- =============================== -->
+<div class="scene scene-9" data-scene="9">
+  <div class="bg-gradient g1" style="top:-200px;right:-200px;background:var(--accent-purple);"></div>
+  <div class="section-label animate-on-active anim-fadeInDown delay-1">Built With</div>
+  <div class="headline animate-on-active anim-fadeInUp delay-1">Robust Tech Stack</div>
+  <div class="tech-grid">
+    <div class="tech-category animate-on-active anim-fadeInUp delay-2">
+      <div class="cat-icon">⚛️</div>
+      <div class="cat-title">Frontend</div>
+      <div class="cat-items">
+        <div class="cat-item">React 18</div>
+        <div class="cat-item">Vite 5</div>
+        <div class="cat-item">Base Account SDK</div>
+        <div class="cat-item">Farcaster Mini App SDK</div>
+      </div>
+    </div>
+    <div class="tech-category animate-on-active anim-fadeInUp delay-3">
+      <div class="cat-icon">🖥️</div>
+      <div class="cat-title">Backend</div>
+      <div class="cat-items">
+        <div class="cat-item">Express.js</div>
+        <div class="cat-item">PostgreSQL</div>
+        <div class="cat-item">JWT Authentication</div>
+        <div class="cat-item">bcryptjs Security</div>
+      </div>
+    </div>
+    <div class="tech-category animate-on-active anim-fadeInUp delay-4">
+      <div class="cat-icon">⛓️</div>
+      <div class="cat-title">Smart Contracts</div>
+      <div class="cat-items">
+        <div class="cat-item">Solidity 0.8.19</div>
+        <div class="cat-item">ERC-20 Standard</div>
+        <div class="cat-item">Base Blockchain (L2)</div>
+        <div class="cat-item">Hardhat Tooling</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================== -->
+<!-- SCENE 10 — CTA / CLOSING       -->
+<!-- =============================== -->
+<div class="scene scene-10" data-scene="10">
+  <div class="bg-gradient g1"></div>
+  <div class="bg-gradient g2"></div>
+  <div class="bg-gradient g3"></div>
+  <div class="logo-text animate-on-active anim-scaleIn delay-1">Threvia</div>
+  <div class="cta-text animate-on-active anim-fadeInUp delay-2">Join the Movement</div>
+  <div class="cta-sub animate-on-active anim-fadeInUp delay-3">
+    Empowering underserved communities through health education<br>
+    and decentralized internet access rewards.
+  </div>
+  <button class="cta-button animate-on-active anim-fadeInUp delay-4">Get Started →</button>
+  <div class="location-badge animate-on-active anim-fadeIn delay-5">
+    📍 Johannesburg, South Africa — Scaling Across Emerging Markets
+  </div>
+</div>
+
+<script>
+// ===== PARTICLES =====
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = 1920;
+canvas.height = 1080;
+
+const particles = [];
+const PARTICLE_COUNT = 60;
+
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+  particles.push({
+    x: Math.random() * 1920,
+    y: Math.random() * 1080,
+    vx: (Math.random() - 0.5) * 0.5,
+    vy: (Math.random() - 0.5) * 0.5,
+    radius: Math.random() * 2 + 0.5,
+    opacity: Math.random() * 0.3 + 0.05,
+  });
+}
+
+function drawParticles() {
+  ctx.clearRect(0, 0, 1920, 1080);
+  particles.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0, 212, 170, ${p.opacity})`;
+    ctx.fill();
+    p.x += p.vx;
+    p.y += p.vy;
+    if (p.x < 0) p.x = 1920;
+    if (p.x > 1920) p.x = 0;
+    if (p.y < 0) p.y = 1080;
+    if (p.y > 1080) p.y = 0;
+  });
+  // Draw connections
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 150) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(0, 212, 170, ${0.06 * (1 - dist / 150)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+// ===== SCENE MANAGEMENT =====
+const scenes = document.querySelectorAll('.scene');
+const totalScenes = scenes.length;
+let currentScene = 0;
+const SCENE_DURATION = 5500; // ms per scene
+
+const progressBar = document.getElementById('progressBar');
+const sceneCounter = document.getElementById('sceneCounter');
+
+function updateProgress() {
+  const progress = ((currentScene + 1) / totalScenes) * 100;
+  progressBar.style.width = progress + '%';
+  sceneCounter.textContent = String(currentScene + 1).padStart(2, '0') + ' / ' + String(totalScenes).padStart(2, '0');
+}
+
+function showScene(index) {
+  scenes.forEach((s, i) => {
+    if (i === index) {
+      s.classList.add('active');
+    } else {
+      s.classList.remove('active');
+      // Reset animations
+      s.querySelectorAll('.animate-on-active').forEach(el => {
+        el.style.opacity = '0';
+      });
+    }
+  });
+  currentScene = index;
+  updateProgress();
+}
+
+function nextScene() {
+  if (currentScene < totalScenes - 1) {
+    showScene(currentScene + 1);
+    setTimeout(nextScene, SCENE_DURATION);
+  }
+  // Stay on last scene
+}
+
+// Start
+updateProgress();
+setTimeout(nextScene, SCENE_DURATION);
+</script>
+</body>
+</html>
