@@ -29,7 +29,7 @@ export function AdminDashboard({ onLogout }) {
           id: '1',
           name: 'February Health Champion',
           description: 'Most engaged user in February',
-          prize: '5000 Threvia Bucks + $50 USDC',
+          prize: '5000 Threvia Bucks + R1000',
           startDate: '2026-02-01',
           endDate: '2026-02-28',
           metric: 'engagementScore',
@@ -99,20 +99,22 @@ export function AdminDashboard({ onLogout }) {
       {/* Header */}
       <div style={styles.header}>
         <div style={styles.headerLeft}>
-          <h1 style={styles.title}>📊 Admin Dashboard</h1>
-          <p style={styles.subtitle}>Manage users and competitions</p>
+          <h1 style={styles.title}>Threvia Control Center</h1>
+          <p style={styles.subtitle}>
+            Operational visibility into users, engagement, and competition loops
+          </p>
         </div>
         <button onClick={onLogout} style={styles.logoutBtn}>
-          🚪 Logout
+          Sign Out
         </button>
       </div>
 
       {/* Tabs */}
       <div style={styles.tabs}>
         {[
-          { id: 'users', label: '👥 Users', icon: '👥' },
-          { id: 'leaderboard', label: '🏆 Leaderboard', icon: '🏆' },
-          { id: 'competitions', label: '🎯 Competitions', icon: '🎯' },
+          { id: 'users', label: 'Users' },
+          { id: 'leaderboard', label: 'Leaderboard' },
+          { id: 'competitions', label: 'Competitions' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -136,7 +138,7 @@ export function AdminDashboard({ onLogout }) {
               <div style={styles.sectionHeader}>
                 <h2 style={styles.sectionTitle}>All Users ({users.length})</h2>
                 <button onClick={exportUserData} style={styles.exportBtn}>
-                  📥 Export Data
+                  Export Data
                 </button>
               </div>
 
@@ -190,7 +192,7 @@ export function AdminDashboard({ onLogout }) {
                         onClick={() => deleteUser(user.id)}
                         style={styles.deleteBtn}
                       >
-                        🗑️
+                        Delete
                       </button>
                     </div>
                   </div>
@@ -211,11 +213,11 @@ export function AdminDashboard({ onLogout }) {
                   <div key={user.id} style={styles.leaderboardRow}>
                     <div style={styles.rankBadge}>
                       {index === 0
-                        ? '🥇'
+                        ? '1'
                         : index === 1
-                          ? '🥈'
+                          ? '2'
                           : index === 2
-                            ? '🥉'
+                            ? '3'
                             : `#${index + 1}`}
                     </div>
                     <div style={styles.leaderboardInfo}>
@@ -251,10 +253,10 @@ export function AdminDashboard({ onLogout }) {
                           ...styles.compStatus,
                           background:
                             comp.status === 'active'
-                              ? 'rgba(0,245,160,0.2)'
-                              : 'rgba(255,68,68,0.2)',
+                              ? 'rgba(10,158,159,0.14)'
+                              : 'rgba(191,84,63,0.14)',
                           color:
-                            comp.status === 'active' ? '#00f5a0' : '#ff4444',
+                            comp.status === 'active' ? '#0a9e9f' : '#b0523d',
                         }}
                       >
                         {comp.status}
@@ -314,163 +316,179 @@ export function AdminDashboard({ onLogout }) {
 const styles = {
   container: {
     minHeight: '100vh',
-    background: 'linear-gradient(160deg,#06080f 0%,#0a1220 100%)',
-    color: '#e8f0fe',
-    fontFamily: "'Sora',sans-serif",
-    padding: '20px',
+    color: '#10223a',
+    fontFamily: "'Manrope',sans-serif",
+    padding: '24px clamp(14px, 4vw, 34px)',
   },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '32px',
-    paddingBottom: '20px',
-    borderBottom: '1px solid rgba(255,255,255,0.08)',
+    alignItems: 'flex-start',
+    gap: '14px',
+    marginBottom: '20px',
+    padding: '18px clamp(14px, 4vw, 24px)',
+    border: '1px solid rgba(16,34,58,0.12)',
+    borderRadius: '20px',
+    background:
+      'linear-gradient(120deg,rgba(255,255,255,0.88) 0%,rgba(230,245,245,0.78) 45%,rgba(255,242,227,0.78) 100%)',
+    boxShadow: '0 12px 30px rgba(16,34,58,0.12)',
   },
   headerLeft: {
     flex: 1,
   },
   title: {
-    fontSize: '32px',
+    fontSize: 'clamp(30px, 4vw, 42px)',
     fontWeight: '700',
-    marginBottom: '8px',
-    color: '#00f5a0',
+    margin: 0,
+    color: '#0f2540',
+    fontFamily: "'Space Grotesk', sans-serif",
   },
   subtitle: {
     fontSize: '14px',
-    color: 'rgba(232,240,254,0.5)',
-    margin: 0,
+    color: 'rgba(16,34,58,0.7)',
+    margin: '8px 0 0',
+    maxWidth: '760px',
+    lineHeight: 1.45,
   },
   logoutBtn: {
-    padding: '10px 20px',
-    borderRadius: '8px',
-    background: 'rgba(255,68,68,0.1)',
-    border: '1px solid rgba(255,68,68,0.3)',
-    color: '#ff4444',
+    padding: '10px 16px',
+    borderRadius: '12px',
+    background: 'rgba(191,84,63,0.1)',
+    border: '1px solid rgba(191,84,63,0.35)',
+    color: '#b0523d',
     fontWeight: '700',
     cursor: 'pointer',
-    fontFamily: "'Sora',sans-serif",
+    whiteSpace: 'nowrap',
   },
   tabs: {
     display: 'flex',
-    gap: '12px',
-    marginBottom: '28px',
-    borderBottom: '1px solid rgba(255,255,255,0.08)',
+    flexWrap: 'wrap',
+    gap: '10px',
+    marginBottom: '18px',
   },
   tab: {
-    padding: '12px 20px',
-    background: 'transparent',
-    border: 'none',
-    color: 'rgba(232,240,254,0.5)',
+    padding: '10px 16px',
+    background: 'rgba(255,255,255,0.75)',
+    border: '1px solid rgba(16,34,58,0.12)',
+    borderRadius: '999px',
+    color: 'rgba(16,34,58,0.66)',
     fontWeight: '600',
     cursor: 'pointer',
     fontSize: '14px',
-    borderBottom: '2px solid transparent',
-    transition: 'all 0.2s',
   },
   tabActive: {
-    color: '#00f5a0',
-    borderBottomColor: '#00f5a0',
+    color: '#0a9e9f',
+    borderColor: 'rgba(10,158,159,0.45)',
+    background: 'rgba(10,158,159,0.12)',
   },
   content: {
-    marginBottom: '32px',
+    marginBottom: '20px',
   },
   section: {
-    background: 'rgba(255,255,255,0.04)',
-    border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: '16px',
-    padding: '24px',
+    background: 'rgba(255,255,255,0.84)',
+    border: '1px solid rgba(16,34,58,0.12)',
+    borderRadius: '18px',
+    padding: '20px',
+    boxShadow: '0 10px 24px rgba(16,34,58,0.1)',
   },
   sectionHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: '10px',
+    flexWrap: 'wrap',
     marginBottom: '20px',
   },
   sectionTitle: {
-    fontSize: '20px',
+    fontSize: '22px',
     fontWeight: '700',
-    color: '#fff',
+    color: '#0f2540',
     margin: 0,
+    fontFamily: "'Space Grotesk', sans-serif",
   },
   exportBtn: {
     padding: '10px 16px',
-    borderRadius: '8px',
-    background: 'linear-gradient(135deg,#00f5a0,#00d9f5)',
+    borderRadius: '10px',
+    background: 'linear-gradient(126deg,#0a9e9f 0%,#0d7ec7 68%,#f49a50 100%)',
     border: 'none',
-    color: '#06080f',
+    color: '#fff',
     fontWeight: '600',
     cursor: 'pointer',
-    fontSize: '12px',
+    fontSize: '13px',
   },
   controls: {
     display: 'flex',
+    flexWrap: 'wrap',
     gap: '12px',
     marginBottom: '20px',
   },
   searchInput: {
-    flex: 1,
-    padding: '10px 14px',
-    borderRadius: '8px',
-    background: 'rgba(0,245,160,0.08)',
-    border: '1px solid rgba(0,245,160,0.2)',
-    color: '#e8f0fe',
+    flex: '1 1 280px',
+    padding: '11px 14px',
+    borderRadius: '10px',
+    background: 'rgba(255,255,255,0.88)',
+    border: '1px solid rgba(16,34,58,0.14)',
+    color: '#10223a',
     fontSize: '13px',
-    fontFamily: "'Sora',sans-serif",
     outline: 'none',
   },
   sortSelect: {
-    padding: '10px 14px',
-    borderRadius: '8px',
-    background: 'rgba(0,245,160,0.08)',
-    border: '1px solid rgba(0,245,160,0.2)',
-    color: '#e8f0fe',
+    padding: '11px 14px',
+    borderRadius: '10px',
+    background: 'rgba(255,255,255,0.88)',
+    border: '1px solid rgba(16,34,58,0.14)',
+    color: '#10223a',
     fontSize: '13px',
-    fontFamily: "'Sora',sans-serif",
   },
   table: {
     overflowX: 'auto',
+    border: '1px solid rgba(16,34,58,0.1)',
+    borderRadius: '12px',
+    background: 'rgba(255,255,255,0.66)',
   },
   tableHeader: {
     display: 'flex',
     gap: '12px',
     padding: '12px',
-    background: 'rgba(0,245,160,0.1)',
-    borderRadius: '8px 8px 0 0',
+    minWidth: '930px',
+    background: 'rgba(10,158,159,0.12)',
+    borderBottom: '1px solid rgba(16,34,58,0.1)',
     fontWeight: '700',
     fontSize: '12px',
-    color: '#00f5a0',
+    color: '#0a9e9f',
   },
   tableRow: {
     display: 'flex',
     gap: '12px',
     padding: '12px',
-    borderBottom: '1px solid rgba(255,255,255,0.05)',
+    minWidth: '930px',
+    borderBottom: '1px solid rgba(16,34,58,0.08)',
     alignItems: 'center',
     fontSize: '13px',
+    color: '#10223a',
   },
   bucksTag: {
-    background: 'rgba(0,245,160,0.15)',
-    color: '#00f5a0',
+    background: 'rgba(10,158,159,0.14)',
+    color: '#0a9e9f',
     padding: '4px 8px',
-    borderRadius: '4px',
+    borderRadius: '6px',
     fontWeight: '600',
     fontSize: '11px',
   },
   scoreTag: {
-    background: 'rgba(0,217,245,0.15)',
-    color: '#00d9f5',
+    background: 'rgba(12,123,198,0.14)',
+    color: '#0d7ec7',
     padding: '4px 8px',
-    borderRadius: '4px',
+    borderRadius: '6px',
     fontWeight: '600',
     fontSize: '11px',
   },
   deleteBtn: {
-    background: 'rgba(255,68,68,0.1)',
-    border: '1px solid rgba(255,68,68,0.2)',
-    color: '#ff4444',
+    background: 'rgba(191,84,63,0.1)',
+    border: '1px solid rgba(191,84,63,0.28)',
+    color: '#b0523d',
     padding: '6px 10px',
-    borderRadius: '6px',
+    borderRadius: '8px',
     cursor: 'pointer',
     fontSize: '12px',
   },
@@ -484,14 +502,17 @@ const styles = {
     alignItems: 'center',
     gap: '16px',
     padding: '16px',
-    background: 'rgba(0,245,160,0.08)',
+    background: 'rgba(255,255,255,0.72)',
     borderRadius: '12px',
-    border: '1px solid rgba(0,245,160,0.15)',
+    border: '1px solid rgba(16,34,58,0.12)',
   },
   rankBadge: {
-    fontSize: '24px',
+    fontSize: '20px',
     minWidth: '40px',
     textAlign: 'center',
+    color: '#0f2540',
+    fontFamily: "'Space Grotesk', sans-serif",
+    fontWeight: 700,
   },
   leaderboardInfo: {
     flex: 1,
@@ -499,11 +520,11 @@ const styles = {
   leaderboardName: {
     fontWeight: '700',
     fontSize: '14px',
-    color: '#e8f0fe',
+    color: '#10223a',
   },
   leaderboardEmail: {
     fontSize: '12px',
-    color: 'rgba(232,240,254,0.5)',
+    color: 'rgba(16,34,58,0.56)',
   },
   leaderboardScore: {
     textAlign: 'center',
@@ -512,21 +533,21 @@ const styles = {
   scoreValue: {
     fontSize: '20px',
     fontWeight: '700',
-    color: '#00f5a0',
+    color: '#0a9e9f',
   },
   scoreLabel: {
     fontSize: '10px',
-    color: 'rgba(232,240,254,0.5)',
+    color: 'rgba(16,34,58,0.56)',
   },
   competitionsGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
     gap: '16px',
   },
   competitionCard: {
-    background: 'rgba(0,245,160,0.05)',
-    border: '1px solid rgba(0,245,160,0.15)',
-    borderRadius: '12px',
+    background: 'rgba(255,255,255,0.72)',
+    border: '1px solid rgba(16,34,58,0.12)',
+    borderRadius: '14px',
     padding: '20px',
   },
   compHeader: {
@@ -540,16 +561,17 @@ const styles = {
     fontWeight: '700',
     margin: 0,
     flex: 1,
+    color: '#10223a',
   },
   compStatus: {
     padding: '4px 12px',
     borderRadius: '20px',
-    fontSize: '10px',
+    fontSize: '11px',
     fontWeight: '700',
   },
   compDesc: {
-    fontSize: '12px',
-    color: 'rgba(232,240,254,0.7)',
+    fontSize: '13px',
+    color: 'rgba(16,34,58,0.74)',
     margin: '8px 0 16px',
   },
   compDetails: {
@@ -563,34 +585,36 @@ const styles = {
     fontSize: '12px',
   },
   compLabel: {
-    color: 'rgba(232,240,254,0.5)',
+    color: 'rgba(16,34,58,0.56)',
     fontWeight: '600',
   },
   compValue: {
-    color: '#00f5a0',
+    color: '#0a9e9f',
     fontWeight: '600',
   },
   stats: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
     gap: '16px',
-    marginTop: '32px',
+    marginTop: '18px',
   },
   statCard: {
-    background: 'rgba(0,245,160,0.08)',
-    border: '1px solid rgba(0,245,160,0.15)',
-    borderRadius: '12px',
-    padding: '20px',
+    background: 'rgba(255,255,255,0.84)',
+    border: '1px solid rgba(16,34,58,0.12)',
+    borderRadius: '14px',
+    padding: '18px',
     textAlign: 'center',
+    boxShadow: '0 8px 20px rgba(16,34,58,0.08)',
   },
   statValue: {
     fontSize: '32px',
     fontWeight: '700',
-    color: '#00f5a0',
-    marginBottom: '8px',
+    color: '#0a9e9f',
+    marginBottom: '6px',
+    fontFamily: "'Space Grotesk', sans-serif",
   },
   statLabel: {
     fontSize: '12px',
-    color: 'rgba(232,240,254,0.5)',
+    color: 'rgba(16,34,58,0.62)',
   },
 };

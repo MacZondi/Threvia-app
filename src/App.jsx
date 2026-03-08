@@ -10,8 +10,9 @@ const SESSION_DURATION = 25 * 60;
 const INITIAL_AD_DURATION = 30;
 const AD_BREAK_DURATION = 30;
 const AD_BREAK_INTERVAL = 5 * 60;
-const AD_BREAK_POINTS = 40;
-const POINTS_PER_BUCK = 10;
+const AD_BREAK_POINTS = 20;
+const POINTS_PER_BUCK = 40;
+const DAILY_POINTS_CAP = 60;
 const PREMIUM_MODULE_UNLOCK_BUCKS = 30;
 const FULL_BROWSER_UNLOCK_BUCKS = 25;
 
@@ -21,7 +22,8 @@ const SPONSORS = [
     name: "Vodacom",
     tagline: "Connecting South Africa",
     color: "#E60000",
-    logo: "📡",
+    logo: "VD",
+    logoUrl: "/images/vodacom.png",
     category: "Telecom",
     adText:
       "Demo sponsor video: Vodacom-powered learning and health access for youth.",
@@ -33,7 +35,8 @@ const SPONSORS = [
     name: "Capitec Bank",
     tagline: "Banking made simple",
     color: "#004A96",
-    logo: "🏦",
+    logo: "CP",
+    logoUrl: "/images/Capitecbanklogo.png",
     category: "Finance",
     adText:
       "Demo sponsor video: Capitec supports safer digital access and growth.",
@@ -45,7 +48,8 @@ const SPONSORS = [
     name: "NSFAS",
     tagline: "Funding your future",
     color: "#2D8A4E",
-    logo: "🎓",
+    logo: "NS",
+    logoUrl: "/images/nsfas.png",
     category: "Education",
     adText:
       "Demo sponsor video: NSFAS helps students unlock education opportunities.",
@@ -57,7 +61,8 @@ const SPONSORS = [
     name: "Dept of Health",
     tagline: "Your health, our priority",
     color: "#8B2020",
-    logo: "❤️",
+    logo: "DH",
+    logoUrl: "/images/Deptofhealth.png",
     category: "Health",
     adText:
       "Demo sponsor video: National health support and youth-friendly services.",
@@ -69,7 +74,8 @@ const SPONSORS = [
     name: "MTN",
     tagline: "Everywhere you go",
     color: "#CC9900",
-    logo: "📶",
+    logo: "MT",
+    logoUrl: "/images/Mtn.jpg",
     category: "Telecom",
     adText:
       "Demo sponsor video: MTN-backed connectivity for essential digital access.",
@@ -111,17 +117,20 @@ Keep responses short, warm, practical, and youth-safe.
 Allowed free-mode focus: education, health, research, maps.
 Do not provide explicit adult content. Provide crisis resources when needed.
 Crisis (South Africa): Lifeline 0861 322 322, SMS 31393.`;
+const CHAT_API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+const CHAT_API_ENDPOINT = `${CHAT_API_BASE_URL.replace(/\/$/, "")}/chat`;
 
 const MODULES = [
-  { id: "chat", icon: "💬", label: "Threvia" },
-  { id: "sexual", icon: "🌿", label: "Sexual Health" },
-  { id: "mental", icon: "🧠", label: "Mind & Mood" },
-  { id: "skills", icon: "🎓", label: "Skills Hub" },
-  { id: "map", icon: "📍", label: "Help Map" },
-  { id: "browser", icon: "🌐", label: "Browser" },
-  { id: "agent", icon: "🤖", label: "AI Agent" },
-  { id: "documents", icon: "📚", label: "My Docs" },
-  { id: "data", icon: "📊", label: "Buy Data" },
+  { id: "chat", icon: "💬", label: "Assistant" },
+  { id: "sexual", icon: "🩺", label: "Sexual Health" },
+  { id: "mental", icon: "🧠", label: "Mental Health" },
+  { id: "skills", icon: "🎓", label: "Skills" },
+  { id: "map", icon: "📍", label: "Services Map" },
+  { id: "browser", icon: "🌐", label: "Web Access" },
+  { id: "agent", icon: "🤖", label: "Agent" },
+  { id: "documents", icon: "📁", label: "Documents" },
+  { id: "data", icon: "📶", label: "Data Store" },
   { id: "support", icon: "💳", label: "Support" },
 ];
 
@@ -153,12 +162,12 @@ const QUICK_PROMPTS = {
 };
 
 const BOOKMARKS = [
-  { label: "WHO Health", url: "https://www.who.int", icon: "🏥" },
-  { label: "UNICEF SA", url: "https://www.unicef.org/southafrica", icon: "🌍" },
-  { label: "NSFAS", url: "https://www.nsfas.org.za", icon: "🎓" },
-  { label: "SA Youth", url: "https://www.sayouth.mobi", icon: "💼" },
-  { label: "Health ZA", url: "https://www.health.gov.za", icon: "💊" },
-  { label: "OpenStreetMap", url: "https://www.openstreetmap.org", icon: "🗺️" },
+  { label: "WHO Health", url: "https://www.who.int", icon: "WH", logoUrl: "https://logo.clearbit.com/who.int" },
+  { label: "UNICEF SA", url: "https://www.unicef.org/southafrica", icon: "UN", logoUrl: "https://logo.clearbit.com/unicef.org" },
+  { label: "NSFAS", url: "https://www.nsfas.org.za", icon: "NS", logoUrl: "https://logo.clearbit.com/nsfas.org.za" },
+  { label: "SA Youth", url: "https://www.sayouth.mobi", icon: "SY", logoUrl: "https://logo.clearbit.com/sayouth.mobi" },
+  { label: "Health ZA", url: "https://www.health.gov.za", icon: "HZ", logoUrl: "https://logo.clearbit.com/health.gov.za" },
+  { label: "OpenStreetMap", url: "https://www.openstreetmap.org", icon: "OS", logoUrl: "https://logo.clearbit.com/openstreetmap.org" },
 ];
 
 const AGENT_TEMPLATES = [
@@ -212,21 +221,101 @@ function isAllowedFreeModeUrl(raw) {
   }
 }
 
+function LogoBadge({
+  logoUrl,
+  fallback,
+  alt,
+  size = 36,
+  radius = 10,
+  border = "1px solid rgba(131,164,222,0.3)",
+  background = "rgba(7,14,28,0.84)",
+  textColor = "var(--th-ink)",
+}) {
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: radius,
+        border,
+        background,
+        display: "grid",
+        placeItems: "center",
+        overflow: "hidden",
+        position: "relative",
+      }}
+    >
+      <span
+        style={{
+          fontFamily: "'Space Grotesk',sans-serif",
+          fontWeight: 700,
+          fontSize: Math.max(10, Math.floor(size * 0.28)),
+          letterSpacing: 0.3,
+          color: textColor,
+        }}
+      >
+        {fallback}
+      </span>
+      {logoUrl ? (
+        <img
+          src={logoUrl}
+          alt={alt}
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            background: "#fff",
+          }}
+          onError={(e) => {
+            e.currentTarget.style.display = "none";
+          }}
+        />
+      ) : null}
+    </div>
+  );
+}
+
 function RandomAdGate({ onContinue }) {
   const [selectedAd, setSelectedAd] = useState(() => pickRandomSponsor());
 
   return (
     <div style={S.screen}>
-      <div style={S.wifiBadge}>📶 THREVIA FREE MODE</div>
+      <div style={S.wifiBadge}>THREVIA ACCESS LAYER</div>
       <div style={S.heroTitle}>
-        First ad is <span style={{ color: "#00f5a0" }}>randomized</span> after login.
+        Premium public-health infrastructure, powered by sponsor-funded sessions.
       </div>
       <div style={S.heroSub}>
-        You must watch the full ad to unlock your free 25-minute browsing session.
+        Users watch a short sponsor slot, then unlock a guided 25-minute experience for education,
+        health, and opportunity access.
+      </div>
+
+      <div style={S.pitchRow}>
+        <div style={S.pitchCard}>
+          <div style={S.pitchValue}>25m</div>
+          <div style={S.pitchLabel}>session duration</div>
+        </div>
+        <div style={S.pitchCard}>
+          <div style={S.pitchValue}>10+</div>
+          <div style={S.pitchLabel}>care modules</div>
+        </div>
+        <div style={S.pitchCard}>
+          <div style={S.pitchValue}>B2G/B2B</div>
+          <div style={S.pitchLabel}>monetization lanes</div>
+        </div>
       </div>
 
       <div style={{ ...S.card, border: `2px solid ${selectedAd.color}` }}>
-        <div style={S.cardLogo}>{selectedAd.logo}</div>
+        <div style={S.cardLogo}>
+          <LogoBadge
+            logoUrl={selectedAd.logoUrl}
+            fallback={selectedAd.logo}
+            alt={`${selectedAd.name} logo`}
+            size={56}
+            radius={14}
+          />
+        </div>
         <div style={S.cardName}>{selectedAd.name}</div>
         <div style={S.cardCat}>{selectedAd.category}</div>
         <div style={{ ...S.timePill, background: selectedAd.color }}>
@@ -241,12 +330,10 @@ function RandomAdGate({ onContinue }) {
           setSelectedAd(pickRandomSponsor(selectedAd.id));
         }}
       >
-        Watch Random Ad & Unlock Free Mode →
+        Start Sponsored Session
       </button>
 
-      <div style={S.legal}>
-        Free mode allows health, education, research, and maps.
-      </div>
+      <div style={S.legal}>Health, education, research, and maps are open by default.</div>
       <style>{globalCss}</style>
     </div>
   );
@@ -268,12 +355,21 @@ function AdPlayer({ sponsor, duration, onDone, pointsReward = 0, mode = "initial
     <div
       style={{
         ...A.screen,
-        background: `linear-gradient(160deg,#06080f,${sponsor.color}20)`,
+        background: `linear-gradient(160deg,rgba(6,14,28,0.94),${sponsor.color}26)`,
       }}
     >
       <div style={A.card}>
         <div style={{ ...A.banner, background: sponsor.color }}>
-          <span style={{ fontSize: 30 }}>{sponsor.logo}</span>
+          <LogoBadge
+            logoUrl={sponsor.logoUrl}
+            fallback={sponsor.logo}
+            alt={`${sponsor.name} logo`}
+            size={36}
+            radius={10}
+            border="1px solid rgba(255,255,255,0.36)"
+            background="rgba(255,255,255,0.16)"
+            textColor="#fff"
+          />
           <div style={{ flex: 1 }}>
             <div style={A.bannerName}>{sponsor.name}</div>
             <div style={A.bannerTag}>{sponsor.tagline}</div>
@@ -294,7 +390,7 @@ function AdPlayer({ sponsor, duration, onDone, pointsReward = 0, mode = "initial
 
         <div style={A.body}>
           <p style={A.adText}>{sponsor.adText}</p>
-          <button style={{ ...A.adCta, background: sponsor.color }}>{sponsor.cta} ↗</button>
+          <button style={{ ...A.adCta, background: sponsor.color }}>{sponsor.cta}</button>
         </div>
 
         <div style={A.progWrap}>
@@ -302,13 +398,13 @@ function AdPlayer({ sponsor, duration, onDone, pointsReward = 0, mode = "initial
             <div style={{ ...A.progFill, width: `${pct}%`, background: sponsor.color }} />
           </div>
           <div style={A.progLbl}>
-            {done ? "✅ Ad complete" : `${secondsLeft}s remaining`}
+            {done ? "Ad complete" : `${secondsLeft}s remaining`}
           </div>
         </div>
       </div>
 
       <div style={A.reward}>
-        <span style={{ fontSize: 34 }}>{mode === "break" ? "🎯" : "⏱️"}</span>
+        <span style={A.rewardBadge}>{mode === "break" ? "BREAK" : "ACCESS"}</span>
         <div>
           <div style={A.rewardLbl}>{mode === "break" ? "Ad break reward" : "Unlocking"}</div>
           <div style={A.rewardVal}>
@@ -321,13 +417,13 @@ function AdPlayer({ sponsor, duration, onDone, pointsReward = 0, mode = "initial
 
       {done ? (
         <button style={A.unlockBtn} onClick={onDone}>
-          {mode === "break" ? "Continue Session →" : "Unlock My Session →"}
+          {mode === "break" ? "Continue Session" : "Unlock Session"}
         </button>
       ) : (
         <div style={A.waitMsg}>This ad is mandatory and cannot be skipped.</div>
       )}
 
-      <div style={A.powered}>Powered by Threvia · YouTube videos are demo placeholders</div>
+      <div style={A.powered}>Powered by Threvia · Sponsor videos stream via embedded YouTube</div>
     </div>
   );
 }
@@ -378,8 +474,12 @@ function AgentModule({ user, onEarnPoints, onToast }) {
     setReminders((prev) => [item, ...prev]);
     setCustomMessage("");
     setWhen("");
-    onEarnPoints(20);
-    onToast("Reminder saved. +20 points");
+    const rewarded = onEarnPoints({
+      amount: 6,
+      source: "agent_reminder_saved",
+      maxTimes: 1,
+    });
+    onToast(rewarded ? "Reminder saved. +6 points" : "Reminder saved.");
   };
 
   const addNote = () => {
@@ -392,9 +492,20 @@ function AgentModule({ user, onEarnPoints, onToast }) {
       },
       ...prev,
     ]);
+    const eligibleForReward = note.trim().length >= 30;
     setNote("");
-    onEarnPoints(10);
-    onToast("Note saved to your AI memory. +10 points");
+    const rewarded =
+      eligibleForReward &&
+      onEarnPoints({
+        amount: 4,
+        source: "agent_note_quality",
+        maxTimes: 1,
+      });
+    onToast(
+      rewarded
+        ? "Note saved. +4 points for detailed entry"
+        : "Note saved."
+    );
   };
 
   const buildShareUrl = (item) => {
@@ -420,7 +531,7 @@ function AgentModule({ user, onEarnPoints, onToast }) {
   return (
     <div style={G.wrap}>
       <div style={G.card}>
-        <h3 style={G.title}>🤖 AI Agent: Reminders + Saved Info</h3>
+        <h3 style={G.title}>AI Agent: Reminders and Saved Information</h3>
         <p style={G.sub}>
           Save health/study info and create reminders for WhatsApp, Telegram, or in-app.
         </p>
@@ -466,7 +577,7 @@ function AgentModule({ user, onEarnPoints, onToast }) {
       </div>
 
       <div style={G.card}>
-        <h3 style={G.title}>🧾 Save Notes</h3>
+        <h3 style={G.title}>Saved Notes</h3>
         <div style={G.row}>
           <input
             style={G.input}
@@ -494,7 +605,7 @@ function AgentModule({ user, onEarnPoints, onToast }) {
       </div>
 
       <div style={G.card}>
-        <h3 style={G.title}>📅 Reminder Queue</h3>
+        <h3 style={G.title}>Reminder Queue</h3>
         <div style={G.list}>
           {reminders.length === 0 ? (
             <div style={G.empty}>No reminders yet.</div>
@@ -527,7 +638,7 @@ function AgentModule({ user, onEarnPoints, onToast }) {
       </div>
 
       <div style={G.card}>
-        <h3 style={G.title}>📍 Opportunity Feed (Demo)</h3>
+        <h3 style={G.title}>Opportunity Feed</h3>
         <div style={G.resources}>
           <a href="https://www.sayouth.mobi" target="_blank" rel="noreferrer" style={G.resourceLink}>
             SA Youth: learnerships & internships
@@ -561,6 +672,9 @@ function MainApp({ sponsor, user, onLogout }) {
   const [bucks, setBucks] = useState(0);
   const [showRewardsModal, setShowRewardsModal] = useState(false);
   const [toast, setToast] = useState(null);
+  const todayKey = new Date().toLocaleDateString("en-CA");
+  const dailyPointsStorageKey = `threviaDailyPoints_${user?.id || "guest"}_${todayKey}`;
+  const [dailyPointsAwarded, setDailyPointsAwarded] = useState(0);
 
   const [browserUrl, setBrowserUrl] = useState("");
   const [browserInput, setBrowserInput] = useState("https://");
@@ -573,6 +687,25 @@ function MainApp({ sponsor, user, onLogout }) {
 
   const chatEnd = useRef(null);
   const lastAdSponsor = useRef(sponsor.id);
+  const rewardState = useRef({
+    counts: {},
+    lastAt: {},
+    approvedDomains: new Set(),
+  });
+
+  useEffect(() => {
+    const stored = localStorage.getItem(dailyPointsStorageKey);
+    if (!stored) {
+      setDailyPointsAwarded(0);
+      return;
+    }
+    const parsed = Number(stored);
+    setDailyPointsAwarded(Number.isFinite(parsed) ? parsed : 0);
+  }, [dailyPointsStorageKey]);
+
+  useEffect(() => {
+    localStorage.setItem(dailyPointsStorageKey, String(dailyPointsAwarded));
+  }, [dailyPointsStorageKey, dailyPointsAwarded]);
 
   useEffect(() => {
     if (expired || adBreak) return;
@@ -605,9 +738,31 @@ function MainApp({ sponsor, user, onLogout }) {
     setTimeout(() => setToast(null), 2500);
   };
 
-  const earnPoints = (amount) => {
-    setPoints((prev) => prev + amount);
-    showToast(`+${amount} points earned`);
+  const earnPoints = (amount, source = "default", options = {}) => {
+    const now = Date.now();
+    const count = rewardState.current.counts[source] || 0;
+    const lastAt = rewardState.current.lastAt[source] || 0;
+    const remainingDailyPoints = DAILY_POINTS_CAP - dailyPointsAwarded;
+    if (remainingDailyPoints <= 0) {
+      showToast("Daily points cap reached. Earn more tomorrow.");
+      return false;
+    }
+
+    if (options.maxTimes != null && count >= options.maxTimes) {
+      return false;
+    }
+
+    if (options.cooldownMs && now - lastAt < options.cooldownMs) {
+      return false;
+    }
+
+    const grantedAmount = Math.min(amount, remainingDailyPoints);
+    rewardState.current.counts[source] = count + 1;
+    rewardState.current.lastAt[source] = now;
+    setPoints((prev) => prev + grantedAmount);
+    setDailyPointsAwarded((prev) => Math.min(DAILY_POINTS_CAP, prev + grantedAmount));
+    showToast(`+${grantedAmount} points earned`);
+    return true;
   };
 
   const convertPointsToBucks = () => {
@@ -619,12 +774,12 @@ function MainApp({ sponsor, user, onLogout }) {
 
     setPoints((prev) => prev - canConvert * POINTS_PER_BUCK);
     setBucks((prev) => prev + canConvert);
-    showToast(`Converted ${canConvert * POINTS_PER_BUCK} points → ${canConvert} ThreviaBucks`);
+    showToast(`Converted ${canConvert * POINTS_PER_BUCK} points to ${canConvert} ThreviaBucks`);
   };
 
   const handleAdBreakDone = () => {
     setAdBreak(null);
-    earnPoints(AD_BREAK_POINTS);
+    earnPoints(AD_BREAK_POINTS, "ad_break_completed");
   };
 
   const switchModule = (id) => {
@@ -647,19 +802,18 @@ function MainApp({ sponsor, user, onLogout }) {
 
     const intros = {
       sexual:
-        "Sexual Health 🌿 Everything here is anonymous and educational. What would you like to know?",
-      mental: "Mind & Mood 🧠 Safe support space. How are you feeling right now?",
+        "Sexual Health: everything here is anonymous and educational. What would you like to know?",
+      mental: "Mental Health: this is a safe support space. How are you feeling right now?",
       skills:
-        "Skills Hub 🎓 Let's focus on bursaries, CVs, study planning, and career prep.",
-      map: "Help Map 📍 Share your area and I can help find nearby clinics and youth services.",
+        "Skills: let's focus on bursaries, CVs, study planning, and career preparation.",
+      map: "Services Map: share your area and I can help find nearby clinics and youth services.",
       documents:
-        "My Documents unlocked. Store your study/health documents securely on this device.",
+        "Documents unlocked. Store your study and health documents securely on this device.",
       support: "Support module unlocked. You can fund and sustain the free-mode program here.",
     };
 
     if (intros[id]) {
       setMessages([{ role: "assistant", content: intros[id] }]);
-      earnPoints(10);
     }
   };
 
@@ -682,7 +836,15 @@ function MainApp({ sponsor, user, onLogout }) {
     setBrowserUrl(value);
 
     if (allowedInFreeMode) {
-      earnPoints(5);
+      const host = new URL(value).hostname.replace(/^www\./, "");
+      const isNewDomain = !rewardState.current.approvedDomains.has(host);
+      if (isNewDomain && rewardState.current.approvedDomains.size < 2) {
+        rewardState.current.approvedDomains.add(host);
+        earnPoints(5, "approved_resource_domain", {
+          maxTimes: 2,
+          cooldownMs: 2 * 60 * 1000,
+        });
+      }
     }
   };
 
@@ -737,50 +899,66 @@ function MainApp({ sponsor, user, onLogout }) {
       "learnership",
     ];
 
-    if (kw.some((k) => msg.toLowerCase().includes(k))) {
-      setTimeout(() => earnPoints(15), 600);
-    }
+    const hits = kw.filter((k) => msg.toLowerCase().includes(k)).length;
+    const qualifiesForQueryReward = hits >= 2 && msg.trim().length >= 40;
 
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch(CHAT_API_ENDPOINT, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
+          max_tokens: 700,
           system: SYSTEM_PROMPT,
           messages: updated.map((m) => ({ role: m.role, content: m.content })),
         }),
       });
 
-      const data = await res.json();
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content:
-            data.content?.[0]?.text ||
-            "I could not reach the assistant API just now. Try again in a moment.",
-        },
-      ]);
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content:
-            "Connection issue. For now I can still help with reminders, notes, and curated resources in free mode.",
-        },
-      ]);
-    }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const apiError = typeof data?.error === "string" ? data.error : null;
+        throw new Error(apiError || `Chat API error ${res.status}`);
+      }
 
-    setLoading(false);
+      const assistantReply = typeof data?.reply === "string" ? data.reply.trim() : "";
+      if (!assistantReply) {
+        throw new Error("Chat API returned an empty reply");
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: assistantReply,
+        },
+      ]);
+      if (qualifiesForQueryReward) {
+        earnPoints(8, "quality_health_query", {
+          maxTimes: 3,
+          cooldownMs: 4 * 60 * 1000,
+        });
+      }
+    } catch (error) {
+      console.error("Chat send failed:", error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "Chat is temporarily unavailable. Please try again shortly.",
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const mins = String(Math.floor(timeLeft / 60)).padStart(2, "0");
   const secs = String(timeLeft % 60).padStart(2, "0");
   const timePct = (timeLeft / SESSION_DURATION) * 100;
-  const timerColor = timePct > 25 ? "#00f5a0" : timePct > 10 ? "#ffc107" : "#ff4444";
+  const timerColor = timePct > 25 ? "#0a9e9f" : timePct > 10 ? "#f4a83d" : "#d0573f";
 
   if (expired) {
     return (
@@ -801,7 +979,7 @@ function MainApp({ sponsor, user, onLogout }) {
 
         <div style={E.tip}>Login again and watch a new random ad to unlock another 25 minutes.</div>
         <button style={E.newBtn} onClick={() => window.location.reload()}>
-          Start New Session →
+          Start New Session
         </button>
 
         <style>{globalCss}</style>
@@ -823,8 +1001,14 @@ function MainApp({ sponsor, user, onLogout }) {
         </div>
 
         <div style={M.sponsorChip}>
-          <span>{sponsor.logo}</span>
-          <span style={{ fontSize: 11, color: "rgba(232,240,254,0.5)" }}>{sponsor.name}</span>
+          <LogoBadge
+            logoUrl={sponsor.logoUrl}
+            fallback={sponsor.logo}
+            alt={`${sponsor.name} logo`}
+            size={20}
+            radius={6}
+          />
+          <span style={{ fontSize: 11, color: "var(--th-muted)" }}>{sponsor.name}</span>
         </div>
 
         <div style={M.metricChip} onClick={() => setShowRewardsModal(true)}>
@@ -837,14 +1021,14 @@ function MainApp({ sponsor, user, onLogout }) {
           <span style={M.metricLbl}>Bucks</span>
         </div>
 
-        <div style={{ ...M.metricChip, background: "rgba(0,217,245,0.12)" }}>
+        <div style={{ ...M.metricChip, background: "rgba(12,123,198,0.14)" }}>
           <span style={{ fontSize: 12 }}>{user?.name?.split(" ")[0] || "User"}</span>
           <button
             onClick={onLogout}
             title="Logout"
             style={M.logoutBtn}
           >
-            🚪
+            Log out
           </button>
         </div>
       </div>
@@ -854,6 +1038,14 @@ function MainApp({ sponsor, user, onLogout }) {
       </div>
 
       {toast && <div style={M.toast}>{toast}</div>}
+
+      <div style={M.investorBanner}>
+        <div style={M.investorTitle}>Platform Overview</div>
+        <div style={M.investorText}>
+          Threvia combines ad-funded access, youth-safe AI, and utility wallet rails in one
+          operating layer.
+        </div>
+      </div>
 
       <div style={M.nav}>
         {MODULES.map((item) => {
@@ -870,10 +1062,8 @@ function MainApp({ sponsor, user, onLogout }) {
                 ...(showAsLocked ? M.navBtnLocked : {}),
               }}
             >
-              <span style={{ fontSize: 15 }}>
-                {item.icon} {showAsLocked ? "🔒" : ""}
-              </span>
-              <span style={{ fontSize: 9, fontWeight: 600 }}>{item.label}</span>
+              <span style={M.navIcon}>{item.icon}</span>
+              <span style={M.navLabel}>{showAsLocked ? `${item.label} (Locked)` : item.label}</span>
             </button>
           );
         })}
@@ -904,7 +1094,15 @@ function MainApp({ sponsor, user, onLogout }) {
                   openBrowserUrl(b.url);
                 }}
               >
-                <span style={{ fontSize: 18 }}>{b.icon}</span>
+                <span style={Br.bmarkIcon}>
+                  <LogoBadge
+                    logoUrl={b.logoUrl}
+                    fallback={b.icon}
+                    alt={`${b.label} logo`}
+                    size={30}
+                    radius={8}
+                  />
+                </span>
                 <span style={Br.bmarkText}>{b.label}</span>
               </button>
             ))}
@@ -912,13 +1110,13 @@ function MainApp({ sponsor, user, onLogout }) {
 
           {blockedUrl && !browserUnlocked && (
             <div style={Br.lockCard}>
-              <div style={Br.lockTitle}>🔒 Restricted in Free Mode</div>
+              <div style={Br.lockTitle}>Restricted in Free Mode</div>
               <div style={Br.lockText}>
                 Free mode is strictly for educational, health, research, and map access.
               </div>
               <div style={Br.lockText}>Blocked URL: {blockedUrl}</div>
               <button style={Br.unlockBtn} onClick={unlockBrowser}>
-                Unlock full browser for {FULL_BROWSER_UNLOCK_BUCKS} Bucks
+                Unlock full browser ({FULL_BROWSER_UNLOCK_BUCKS} Bucks)
               </button>
             </div>
           )}
@@ -932,8 +1130,8 @@ function MainApp({ sponsor, user, onLogout }) {
             />
           ) : (
             <div style={Br.ph}>
-              <div style={{ fontSize: 50 }}>🌐</div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: "rgba(232,240,254,0.52)" }}>
+              <div style={Br.phIcon}>WEB</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "var(--th-muted)" }}>
                 Free-Mode Browser
               </div>
               <div style={Br.phText}>
@@ -953,7 +1151,7 @@ function MainApp({ sponsor, user, onLogout }) {
             userAddress={user?.address}
             userBucks={bucks}
             onPurchaseComplete={(data) => {
-              showToast(`✅ ${data.package.dataSize} activated!`);
+              showToast(`${data.package.dataSize} activated.`);
               if (data.paymentMethod === "bucks") {
                 setBucks((prev) => Math.max(0, prev - data.bucksSpent));
               }
@@ -962,7 +1160,17 @@ function MainApp({ sponsor, user, onLogout }) {
         </div>
       ) : module === "agent" ? (
         <div style={{ flex: 1, overflow: "auto" }}>
-          <AgentModule user={user} onEarnPoints={earnPoints} onToast={showToast} />
+          <AgentModule
+            user={user}
+            onEarnPoints={(config) => {
+              if (typeof config === "number") {
+                return earnPoints(config, "agent_legacy", { maxTimes: 1 });
+              }
+              if (!config?.amount) return false;
+              return earnPoints(config.amount, config.source || "agent_custom", config);
+            }}
+            onToast={showToast}
+          />
         </div>
       ) : module === "support" ? (
         <div style={P.wrap}>
@@ -971,7 +1179,7 @@ function MainApp({ sponsor, user, onLogout }) {
             <p style={P.text}>
               This module is unlocked and ready for Base Pay integrations in the next iteration.
             </p>
-            <p style={P.text}>You can currently use Buy Data and AI Agent features in this demo.</p>
+            <p style={P.text}>Buy Data and Agent features are currently available in this environment.</p>
           </div>
         </div>
       ) : (
@@ -1018,18 +1226,18 @@ function MainApp({ sponsor, user, onLogout }) {
               placeholder="Ask anything about health, studies, careers, or local services..."
             />
             <button style={M.send} onClick={() => send()}>
-              ➤
+              Send
             </button>
           </div>
         </>
       )}
 
-      <div style={M.footer}>🔒 POPIA-aligned demo · Free mode first · Youth-safe guidance</div>
+      <div style={M.footer}>POPIA-aligned platform · Sponsor-funded access · Youth-safe guidance</div>
 
       {showRewardsModal && (
         <div style={Mo.overlay} onClick={() => setShowRewardsModal(false)}>
           <div style={Mo.box} onClick={(e) => e.stopPropagation()}>
-            <div style={Mo.title}>💰 Points & ThreviaBucks</div>
+            <div style={Mo.title}>Points and ThreviaBucks</div>
             <div style={Mo.rowStat}>
               <span>Points</span>
               <span style={Mo.bigNum}>{points}</span>
@@ -1038,13 +1246,23 @@ function MainApp({ sponsor, user, onLogout }) {
               <span>ThreviaBucks</span>
               <span style={Mo.bigNum}>{bucks}</span>
             </div>
+            <div style={Mo.rowStat}>
+              <span>Daily Points</span>
+              <span style={Mo.bigNum}>{dailyPointsAwarded}/{DAILY_POINTS_CAP}</span>
+            </div>
 
             <button style={Mo.convertBtn} onClick={convertPointsToBucks}>
               Convert points to Bucks ({POINTS_PER_BUCK} pts = 1 Buck)
             </button>
 
             <div style={Mo.subHd}>How to earn points</div>
-            {["Watch mandatory ad breaks (+40)", "Health/education engagement (+15)", "Save reminders/notes (+20/+10)", "Use approved resources (+5)"].map((line) => (
+            {[
+              "Complete mandatory ad breaks (+20)",
+              "Submit high-quality health/study prompts (+8 after assistant reply)",
+              "First reminder and first detailed note only (+6 / +4)",
+              "New approved resource domains only (+5, max 2)",
+              `Daily points cap: ${DAILY_POINTS_CAP}`,
+            ].map((line) => (
               <div key={line} style={Mo.ruleRow}>
                 {line}
               </div>
@@ -1176,94 +1394,169 @@ export default function Threvia() {
 }
 
 const globalCss = `
-  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap');
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#06080f;font-family:'Sora',sans-serif}
-  @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,245,160,.3)}50%{box-shadow:0 0 0 8px rgba(0,245,160,0)}}
+  @keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(10,158,159,.25)}50%{box-shadow:0 0 0 12px rgba(10,158,159,0)}}
+  @keyframes floatIn{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 `;
 
 const base = {
-  fontFamily: "'Sora',sans-serif",
-  background: "linear-gradient(160deg,#06080f 0%,#0a1220 100%)",
+  fontFamily: "'Manrope',sans-serif",
+  background:
+    "radial-gradient(circle at 8% 6%,rgba(12,123,198,0.2) 0%,transparent 38%),linear-gradient(160deg,rgba(4,10,20,0.96) 0%,rgba(8,16,30,0.96) 100%)",
   minHeight: "100vh",
-  maxWidth: 480,
+  width: "100%",
+  maxWidth: 1140,
   margin: "0 auto",
-  color: "#e8f0fe",
+  color: "var(--th-ink)",
   display: "flex",
   flexDirection: "column",
   overflow: "hidden",
   position: "relative",
+  border: "1px solid var(--th-card-border)",
+  borderRadius: 30,
+  boxShadow: "0 24px 48px rgba(0,0,0,0.45)",
+  backdropFilter: "blur(8px)",
 };
 
 const S = {
-  screen: { ...base, alignItems: "center", justifyContent: "center", padding: "24px 18px", gap: 16 },
+  screen: {
+    ...base,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "42px clamp(18px,4vw,48px)",
+    gap: 16,
+    animation: "floatIn .35s ease",
+  },
   wifiBadge: {
-    background: "rgba(0,245,160,0.1)",
-    border: "1px solid rgba(0,245,160,0.25)",
-    color: "#00f5a0",
-    fontSize: 10,
+    background: "rgba(10,158,159,0.14)",
+    border: "1px solid rgba(10,158,159,0.28)",
+    color: "var(--th-accent)",
+    fontSize: 11,
     fontWeight: 700,
-    letterSpacing: 1.6,
-    padding: "6px 16px",
+    letterSpacing: 1.4,
+    padding: "6px 14px",
     borderRadius: 999,
     textTransform: "uppercase",
   },
-  heroTitle: { fontSize: 28, fontWeight: 700, textAlign: "center", lineHeight: 1.2 },
-  heroSub: { fontSize: 13, color: "rgba(232,240,254,0.5)", textAlign: "center", lineHeight: 1.5 },
+  heroTitle: {
+    fontFamily: "'Space Grotesk',sans-serif",
+    fontSize: "clamp(26px,4.5vw,44px)",
+    fontWeight: 700,
+    textAlign: "center",
+    lineHeight: 1.12,
+    maxWidth: 880,
+    color: "var(--th-ink)",
+  },
+  heroSub: {
+    fontSize: 15,
+    color: "var(--th-muted)",
+    textAlign: "center",
+    lineHeight: 1.6,
+    maxWidth: 760,
+  },
+  pitchRow: {
+    width: "100%",
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))",
+    gap: 10,
+    maxWidth: 760,
+  },
+  pitchCard: {
+    background: "rgba(8,16,34,0.78)",
+    border: "1px solid rgba(16,34,58,0.12)",
+    borderRadius: 14,
+    padding: "12px 14px",
+    textAlign: "center",
+  },
+  pitchValue: {
+    fontFamily: "'Space Grotesk',sans-serif",
+    fontSize: 22,
+    fontWeight: 700,
+    color: "var(--th-ink)",
+  },
+  pitchLabel: {
+    fontSize: 11,
+    color: "var(--th-muted)",
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+  },
   card: {
     width: "100%",
-    maxWidth: 320,
-    background: "rgba(255,255,255,0.03)",
-    border: "1px solid rgba(255,255,255,0.1)",
-    borderRadius: 16,
-    padding: 18,
+    maxWidth: 420,
+    background: "rgba(8,16,34,0.86)",
+    border: "1px solid rgba(16,34,58,0.12)",
+    borderRadius: 18,
+    padding: 22,
     position: "relative",
+    boxShadow: "0 14px 30px rgba(16,34,58,0.15)",
   },
-  cardLogo: { fontSize: 34, marginBottom: 6 },
-  cardName: { fontWeight: 700, fontSize: 18 },
-  cardCat: { fontSize: 11, color: "rgba(232,240,254,0.55)", marginTop: 4 },
+  cardLogo: {
+    width: 56,
+    height: 56,
+    borderRadius: 14,
+    border: "1px solid rgba(16,34,58,0.15)",
+    background: "rgba(16,34,58,0.06)",
+    display: "grid",
+    placeItems: "center",
+    fontFamily: "'Space Grotesk',sans-serif",
+    fontWeight: 700,
+    fontSize: 20,
+    marginBottom: 8,
+    color: "var(--th-ink)",
+  },
+  cardName: { fontWeight: 700, fontSize: 20, color: "var(--th-ink)" },
+  cardCat: { fontSize: 12, color: "var(--th-muted)", marginTop: 4 },
   timePill: {
     position: "absolute",
-    right: 12,
-    top: 12,
-    padding: "4px 10px",
+    right: 14,
+    top: 14,
+    padding: "5px 11px",
     borderRadius: 999,
     color: "#fff",
     fontSize: 11,
     fontWeight: 700,
-    fontFamily: "'Space Mono',monospace",
+    fontFamily: "'Space Grotesk',sans-serif",
   },
   ctaBtn: {
     width: "100%",
-    maxWidth: 320,
+    maxWidth: 420,
     padding: "14px 16px",
-    borderRadius: 12,
+    borderRadius: 13,
     border: "none",
-    background: "linear-gradient(135deg,#00f5a0,#00bcd4)",
-    color: "#06121f",
+    background: "linear-gradient(180deg,#0d7ec7 0%,#0b6eaf 100%)",
+    color: "#fff",
     fontWeight: 700,
     cursor: "pointer",
-    fontFamily: "'Sora',sans-serif",
+    letterSpacing: 0.2,
+    boxShadow: "0 12px 26px rgba(12,123,198,0.28)",
   },
-  legal: { fontSize: 10.5, color: "rgba(232,240,254,0.35)", textAlign: "center" },
+  legal: { fontSize: 11, color: "var(--th-muted)", textAlign: "center" },
 };
 
 const A = {
-  screen: { ...base, padding: "20px 16px", alignItems: "center", justifyContent: "center", gap: 14 },
+  screen: {
+    ...base,
+    padding: "24px clamp(14px,4vw,34px)",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 14,
+  },
   card: {
     width: "100%",
-    borderRadius: 16,
+    maxWidth: 880,
+    borderRadius: 18,
     overflow: "hidden",
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.08)",
+    background: "rgba(8,16,34,0.88)",
+    border: "1px solid rgba(16,34,58,0.12)",
+    boxShadow: "0 12px 30px rgba(16,34,58,0.15)",
   },
   banner: { display: "flex", alignItems: "center", gap: 12, padding: "14px 16px" },
   bannerName: { fontWeight: 700, fontSize: 15, color: "#fff" },
-  bannerTag: { fontSize: 10.5, color: "rgba(255,255,255,0.7)" },
+  bannerTag: { fontSize: 11, color: "rgba(255,255,255,0.8)" },
   adBadge: {
     marginLeft: "auto",
-    background: "rgba(255,255,255,0.2)",
+    background: "rgba(0,0,0,0.22)",
     padding: "2px 8px",
     borderRadius: 6,
     fontSize: 10,
@@ -1272,7 +1565,7 @@ const A = {
   videoWrap: { width: "100%", aspectRatio: "16 / 9", background: "#000" },
   videoFrame: { width: "100%", height: "100%", border: "none" },
   body: { padding: "12px 16px" },
-  adText: { fontSize: 13.5, lineHeight: 1.6, color: "rgba(232,240,254,0.82)", marginBottom: 12 },
+  adText: { fontSize: 13.5, lineHeight: 1.6, color: "var(--th-muted)", marginBottom: 12 },
   adCta: {
     border: "none",
     borderRadius: 10,
@@ -1280,43 +1573,59 @@ const A = {
     color: "#fff",
     fontWeight: 700,
     fontSize: 12,
-    fontFamily: "'Sora',sans-serif",
+    fontFamily: "'Manrope',sans-serif",
   },
-  progWrap: { padding: "10px 16px", borderTop: "1px solid rgba(255,255,255,0.06)" },
-  progTrack: { height: 6, background: "rgba(255,255,255,0.08)", borderRadius: 99, overflow: "hidden" },
+  progWrap: { padding: "10px 16px", borderTop: "1px solid rgba(16,34,58,0.08)" },
+  progTrack: { height: 6, background: "rgba(16,34,58,0.08)", borderRadius: 99, overflow: "hidden" },
   progFill: { height: "100%", borderRadius: 99, transition: "width 1s linear" },
-  progLbl: { fontSize: 11, color: "rgba(232,240,254,0.5)", marginTop: 6, textAlign: "right" },
+  progLbl: { fontSize: 11, color: "var(--th-muted)", marginTop: 6, textAlign: "right" },
   reward: {
     display: "flex",
     alignItems: "center",
     gap: 12,
     width: "100%",
-    background: "rgba(0,245,160,0.08)",
-    border: "1px solid rgba(0,245,160,0.2)",
+    maxWidth: 880,
+    background: "rgba(10,158,159,0.12)",
+    border: "1px solid rgba(10,158,159,0.25)",
     borderRadius: 12,
     padding: "12px 14px",
   },
   rewardLbl: {
     fontSize: 10,
-    color: "rgba(0,245,160,0.6)",
+    color: "rgba(10,158,159,0.8)",
     textTransform: "uppercase",
     letterSpacing: 1,
   },
-  rewardVal: { fontSize: 14.5, fontWeight: 700, color: "#00f5a0" },
+  rewardVal: { fontSize: 14.5, fontWeight: 700, color: "var(--th-accent)" },
+  rewardBadge: {
+    minWidth: 68,
+    height: 40,
+    borderRadius: 10,
+    border: "1px solid rgba(10,158,159,0.34)",
+    background: "rgba(10,158,159,0.14)",
+    color: "var(--th-accent)",
+    fontFamily: "'Space Grotesk',sans-serif",
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: 1.1,
+    textTransform: "uppercase",
+    display: "grid",
+    placeItems: "center",
+  },
   unlockBtn: {
     width: "100%",
+    maxWidth: 880,
     padding: "13px",
     borderRadius: 12,
     border: "none",
-    background: "linear-gradient(135deg,#00f5a0,#00bcd4)",
-    color: "#06121f",
+    background: "linear-gradient(180deg,#0d7ec7 0%,#0b6eaf 100%)",
+    color: "#fff",
     fontWeight: 700,
     cursor: "pointer",
-    fontFamily: "'Sora',sans-serif",
     animation: "pulse 2s infinite",
   },
-  waitMsg: { fontSize: 12, color: "rgba(232,240,254,0.45)", textAlign: "center" },
-  powered: { fontSize: 10, color: "rgba(232,240,254,0.25)", textAlign: "center" },
+  waitMsg: { fontSize: 12, color: "var(--th-muted)", textAlign: "center" },
+  powered: { fontSize: 10, color: "rgba(16,34,58,0.45)", textAlign: "center" },
 };
 
 const M = {
@@ -1324,186 +1633,229 @@ const M = {
   timerBar: {
     display: "flex",
     alignItems: "center",
-    gap: 6,
-    padding: "12px 10px 8px",
-    background: "rgba(6,8,15,0.96)",
-    overflowX: "auto",
+    flexWrap: "wrap",
+    gap: 10,
+    padding: "14px 14px 10px",
+    background: "rgba(8,16,34,0.68)",
+    borderBottom: "1px solid rgba(16,34,58,0.08)",
   },
   timerLeft: { display: "flex", alignItems: "center", gap: 8 },
   dot: { width: 8, height: 8, borderRadius: "50%", animation: "pulse 2s infinite" },
-  time: { fontFamily: "'Space Mono',monospace", fontSize: 18, fontWeight: 700, lineHeight: 1 },
-  timeLbl: { fontSize: 8.5, color: "rgba(232,240,254,0.4)", textTransform: "uppercase" },
+  time: { fontFamily: "'Space Grotesk',sans-serif", fontSize: 19, fontWeight: 700, lineHeight: 1 },
+  timeLbl: { fontSize: 9, color: "var(--th-muted)", textTransform: "uppercase" },
   sponsorChip: {
     display: "flex",
     alignItems: "center",
     gap: 6,
-    background: "rgba(255,255,255,0.05)",
+    background: "rgba(8,16,34,0.72)",
+    border: "1px solid rgba(16,34,58,0.12)",
     borderRadius: 16,
-    padding: "4px 8px",
+    padding: "5px 10px",
     fontSize: 11,
     flexShrink: 0,
+    color: "var(--th-ink)",
   },
   metricChip: {
-    background: "rgba(0,245,160,0.1)",
-    border: "1px solid rgba(0,245,160,0.2)",
+    background: "rgba(10,158,159,0.12)",
+    border: "1px solid rgba(10,158,159,0.24)",
     borderRadius: 16,
-    padding: "4px 8px",
+    padding: "5px 10px",
     cursor: "pointer",
     textAlign: "center",
     flexShrink: 0,
   },
   metricNum: {
     display: "block",
-    fontFamily: "'Space Mono',monospace",
+    fontFamily: "'Space Grotesk',sans-serif",
     fontSize: 12,
     fontWeight: 700,
-    color: "#00f5a0",
+    color: "var(--th-accent)",
     lineHeight: 1,
   },
   metricLbl: {
     display: "block",
     fontSize: 8,
-    color: "rgba(0,245,160,0.55)",
+    color: "rgba(10,158,159,0.65)",
     textTransform: "uppercase",
   },
   logoutBtn: {
     marginLeft: 6,
     border: "none",
     background: "none",
-    color: "rgba(232,240,254,0.8)",
+    color: "var(--th-muted)",
     cursor: "pointer",
     fontSize: 13,
   },
-  strip: { height: 3, background: "rgba(255,255,255,0.05)", overflow: "hidden" },
+  strip: { height: 4, background: "rgba(16,34,58,0.08)", overflow: "hidden" },
   stripFill: { height: "100%", transition: "width 1s linear" },
   toast: {
     position: "fixed",
-    top: 66,
+    top: 16,
     left: "50%",
     transform: "translateX(-50%)",
-    background: "linear-gradient(135deg,#00f5a0,#00bcd4)",
-    color: "#06121f",
-    padding: "8px 16px",
+    background: "linear-gradient(180deg,#0d7ec7 0%,#0b6eaf 100%)",
+    color: "#fff",
+    padding: "9px 16px",
     borderRadius: 999,
     fontWeight: 700,
     fontSize: 12,
     zIndex: 1200,
     whiteSpace: "nowrap",
     animation: "slideUp 0.2s ease",
+    boxShadow: "0 10px 22px rgba(16,34,58,0.28)",
+  },
+  investorBanner: {
+    margin: "12px 12px 0",
+    borderRadius: 16,
+    padding: "12px 14px",
+    border: "1px solid rgba(16,34,58,0.12)",
+    background: "rgba(8,16,34,0.9)",
+  },
+  investorTitle: {
+    fontFamily: "'Space Grotesk',sans-serif",
+    fontSize: 13,
+    fontWeight: 700,
+    color: "var(--th-ink)",
+    textTransform: "uppercase",
+    letterSpacing: 1.1,
+    marginBottom: 4,
+  },
+  investorText: {
+    fontSize: 13,
+    color: "var(--th-muted)",
+    lineHeight: 1.45,
   },
   nav: {
     display: "flex",
-    overflowX: "auto",
-    gap: 6,
-    padding: "8px 10px",
-    borderBottom: "1px solid rgba(255,255,255,0.05)",
+    flexWrap: "wrap",
+    gap: 8,
+    padding: "10px 12px",
+    borderBottom: "1px solid rgba(16,34,58,0.08)",
   },
   navBtn: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: 3,
-    padding: "7px 10px",
-    borderRadius: 10,
-    border: "1px solid rgba(255,255,255,0.08)",
-    background: "rgba(255,255,255,0.03)",
-    color: "rgba(232,240,254,0.5)",
+    gap: 4,
+    padding: "9px 11px",
+    borderRadius: 12,
+    border: "1px solid rgba(16,34,58,0.12)",
+    background: "rgba(8,16,34,0.76)",
+    color: "var(--th-muted)",
     cursor: "pointer",
     whiteSpace: "nowrap",
-    flexShrink: 0,
+    flex: "1 1 92px",
   },
+  navIcon: {
+    width: 26,
+    height: 26,
+    borderRadius: 8,
+    border: "1px solid rgba(16,34,58,0.16)",
+    background: "rgba(8,16,34,0.9)",
+    fontFamily: "'Space Grotesk',sans-serif",
+    fontSize: 14,
+    fontWeight: 700,
+    letterSpacing: 0,
+    display: "grid",
+    placeItems: "center",
+    color: "var(--th-ink)",
+  },
+  navLabel: { fontSize: 10, fontWeight: 600, textAlign: "center" },
   navBtnOn: {
-    border: "1px solid rgba(0,245,160,0.4)",
-    background: "rgba(0,245,160,0.08)",
-    color: "#00f5a0",
+    border: "1px solid rgba(10,158,159,0.4)",
+    background: "rgba(10,158,159,0.14)",
+    color: "var(--th-accent)",
   },
   navBtnLocked: {
-    border: "1px solid rgba(255,193,7,0.4)",
-    color: "#ffd166",
+    border: "1px solid rgba(244,154,80,0.45)",
+    color: "var(--th-warm)",
   },
-  qrow: { display: "flex", flexWrap: "wrap", gap: 5, padding: "8px 10px" },
+  qrow: { display: "flex", flexWrap: "wrap", gap: 6, padding: "10px 12px" },
   qbtn: {
-    background: "rgba(0,210,245,0.08)",
-    border: "1px solid rgba(0,210,245,0.2)",
+    background: "rgba(12,123,198,0.1)",
+    border: "1px solid rgba(12,123,198,0.25)",
     borderRadius: 16,
-    color: "#00d9f5",
-    fontSize: 11,
-    padding: "4px 10px",
+    color: "var(--th-accent-strong)",
+    fontSize: 12,
+    padding: "6px 11px",
     cursor: "pointer",
   },
   chat: {
     flex: 1,
     overflowY: "auto",
-    padding: 12,
+    padding: 14,
     display: "flex",
     flexDirection: "column",
-    gap: 9,
+    gap: 10,
   },
   row: { display: "flex", alignItems: "flex-end", gap: 6 },
   avatar: {
-    width: 24,
-    height: 24,
-    borderRadius: 8,
-    background: "linear-gradient(135deg,#00f5a0,#00d9f5)",
+    width: 28,
+    height: 28,
+    borderRadius: 10,
+    background: "linear-gradient(180deg,#0d7ec7 0%,#0b6eaf 100%)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    color: "#06121f",
+    color: "#fff",
     fontWeight: 700,
     fontSize: 12,
-    fontFamily: "'Space Mono',monospace",
+    fontFamily: "'Space Grotesk',sans-serif",
   },
   bubble: {
     maxWidth: "82%",
-    padding: "10px 12px",
-    borderRadius: 14,
-    fontSize: 13,
-    lineHeight: 1.5,
+    padding: "11px 13px",
+    borderRadius: 15,
+    fontSize: 13.5,
+    lineHeight: 1.52,
     whiteSpace: "pre-wrap",
   },
   aBubble: {
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.08)",
+    background: "rgba(8,16,34,0.78)",
+    border: "1px solid rgba(16,34,58,0.12)",
     borderBottomLeftRadius: 4,
   },
   uBubble: {
-    background: "linear-gradient(135deg,rgba(0,245,160,0.14),rgba(0,217,245,0.14))",
-    border: "1px solid rgba(0,245,160,0.22)",
+    background: "rgba(13,126,199,0.12)",
+    border: "1px solid rgba(10,158,159,0.22)",
     borderBottomRightRadius: 4,
   },
   inputRow: {
     display: "flex",
     gap: 8,
-    padding: "10px",
-    borderTop: "1px solid rgba(255,255,255,0.06)",
-    background: "rgba(6,8,15,0.96)",
+    padding: "12px",
+    borderTop: "1px solid rgba(16,34,58,0.08)",
+    background: "rgba(8,16,34,0.7)",
   },
   input: {
     flex: 1,
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.1)",
-    borderRadius: 10,
+    background: "rgba(8,16,34,0.82)",
+    border: "1px solid rgba(16,34,58,0.14)",
+    borderRadius: 12,
     padding: "10px 12px",
-    color: "#e8f0fe",
-    fontSize: 13,
+    color: "var(--th-ink)",
+    fontSize: 13.5,
     outline: "none",
-    fontFamily: "'Sora',sans-serif",
+    fontFamily: "'Manrope',sans-serif",
   },
   send: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
+    minWidth: 66,
+    height: 44,
+    borderRadius: 12,
     border: "none",
-    background: "linear-gradient(135deg,#00f5a0,#00bcd4)",
-    color: "#06121f",
+    background: "linear-gradient(180deg,#0d7ec7 0%,#0b6eaf 100%)",
+    color: "#fff",
     cursor: "pointer",
     fontWeight: 700,
+    fontSize: 12,
+    padding: "0 14px",
+    boxShadow: "0 10px 20px rgba(16,34,58,0.22)",
   },
   footer: {
     textAlign: "center",
-    fontSize: 9.5,
-    color: "rgba(232,240,254,0.25)",
-    padding: "6px 12px 8px",
+    fontSize: 10.5,
+    color: "var(--th-muted)",
+    padding: "9px 12px 12px",
   },
 };
 
@@ -1512,96 +1864,133 @@ const Br = {
   urlRow: {
     display: "flex",
     gap: 8,
-    padding: "9px 10px",
-    borderBottom: "1px solid rgba(255,255,255,0.05)",
+    padding: "10px 12px",
+    borderBottom: "1px solid rgba(16,34,58,0.08)",
   },
   urlIn: {
     flex: 1,
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: 10,
+    background: "rgba(8,16,34,0.82)",
+    border: "1px solid rgba(16,34,58,0.14)",
+    borderRadius: 12,
     padding: "8px 10px",
-    color: "#e8f0fe",
-    fontSize: 12,
+    color: "var(--th-ink)",
+    fontSize: 13,
     outline: "none",
   },
   go: {
     padding: "8px 14px",
-    borderRadius: 10,
+    borderRadius: 12,
     border: "none",
-    background: "linear-gradient(135deg,#00f5a0,#00bcd4)",
-    color: "#06121f",
+    background: "linear-gradient(180deg,#0d7ec7 0%,#0b6eaf 100%)",
+    color: "#fff",
     fontWeight: 700,
     cursor: "pointer",
   },
   bmarks: {
     display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
-    gap: 6,
-    padding: "8px 10px",
-    borderBottom: "1px solid rgba(255,255,255,0.05)",
+    gridTemplateColumns: "repeat(auto-fit,minmax(110px,1fr))",
+    gap: 8,
+    padding: "10px 12px",
+    borderBottom: "1px solid rgba(16,34,58,0.08)",
   },
   bmark: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     gap: 4,
-    padding: "8px 6px",
-    borderRadius: 10,
-    border: "1px solid rgba(255,255,255,0.08)",
-    background: "rgba(255,255,255,0.03)",
-    color: "#e8f0fe",
+    padding: "10px 8px",
+    borderRadius: 12,
+    border: "1px solid rgba(16,34,58,0.12)",
+    background: "rgba(8,16,34,0.74)",
+    color: "var(--th-ink)",
     cursor: "pointer",
   },
-  bmarkText: { fontSize: 9.5, color: "rgba(232,240,254,0.55)", textAlign: "center" },
+  bmarkIcon: {
+    width: 30,
+    height: 30,
+    borderRadius: 8,
+    border: "1px solid rgba(16,34,58,0.16)",
+    background: "rgba(8,16,34,0.92)",
+    fontFamily: "'Space Grotesk',sans-serif",
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: 0.5,
+    display: "grid",
+    placeItems: "center",
+  },
+  bmarkText: { fontSize: 11, color: "var(--th-muted)", textAlign: "center" },
   lockCard: {
-    margin: "8px 10px",
-    padding: 12,
-    borderRadius: 12,
-    background: "rgba(255,193,7,0.1)",
-    border: "1px solid rgba(255,193,7,0.3)",
+    margin: "10px 12px",
+    padding: 14,
+    borderRadius: 14,
+    background: "rgba(244,154,80,0.14)",
+    border: "1px solid rgba(244,154,80,0.34)",
     display: "flex",
     flexDirection: "column",
     gap: 8,
   },
-  lockTitle: { fontSize: 13, fontWeight: 700, color: "#ffd166" },
-  lockText: { fontSize: 11.5, color: "rgba(232,240,254,0.75)" },
+  lockTitle: { fontSize: 13, fontWeight: 700, color: "#91511d" },
+  lockText: { fontSize: 12, color: "rgba(16,34,58,0.82)" },
   unlockBtn: {
     padding: "9px 12px",
-    borderRadius: 9,
+    borderRadius: 10,
     border: "none",
-    background: "#ffd166",
-    color: "#06121f",
+    background: "#91511d",
+    color: "#fff",
     fontWeight: 700,
     cursor: "pointer",
   },
   frame: { flex: 1, border: "none", background: "#fff" },
-  ph: { flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, padding: 20 },
-  phText: { fontSize: 12, color: "rgba(232,240,254,0.45)", textAlign: "center", lineHeight: 1.5 },
+  ph: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    padding: 20,
+  },
+  phIcon: {
+    width: 68,
+    height: 68,
+    borderRadius: 18,
+    border: "1px solid rgba(16,34,58,0.16)",
+    background: "rgba(8,16,34,0.92)",
+    fontFamily: "'Space Grotesk',sans-serif",
+    fontSize: 15,
+    fontWeight: 700,
+    letterSpacing: 1.2,
+    display: "grid",
+    placeItems: "center",
+    color: "var(--th-ink)",
+  },
+  phText: { fontSize: 13, color: "var(--th-muted)", textAlign: "center", lineHeight: 1.5 },
 };
 
 const E = {
   screen: { ...base, alignItems: "center", justifyContent: "center", padding: 24, gap: 14 },
-  title: { fontSize: 26, fontWeight: 700, color: "#ff6b6b" },
-  sub: { fontSize: 14, color: "rgba(232,240,254,0.5)", textAlign: "center" },
+  title: { fontSize: 32, fontWeight: 700, color: "#b0523d", fontFamily: "'Space Grotesk',sans-serif" },
+  sub: { fontSize: 14, color: "var(--th-muted)", textAlign: "center" },
   bucksBox: {
     width: "100%",
-    background: "rgba(0,245,160,0.08)",
-    border: "1px solid rgba(0,245,160,0.2)",
+    maxWidth: 460,
+    background: "rgba(8,16,34,0.78)",
+    border: "1px solid rgba(16,34,58,0.13)",
     borderRadius: 14,
     padding: "14px 18px",
     textAlign: "center",
   },
-  bucksNum: { fontSize: 32, fontWeight: 700, color: "#00f5a0", fontFamily: "'Space Mono',monospace" },
-  bucksLbl: { fontSize: 11, color: "rgba(0,245,160,0.55)" },
-  tip: { fontSize: 12, color: "rgba(232,240,254,0.45)", textAlign: "center" },
+  bucksNum: { fontSize: 32, fontWeight: 700, color: "var(--th-accent)", fontFamily: "'Space Grotesk',sans-serif" },
+  bucksLbl: { fontSize: 11, color: "var(--th-muted)" },
+  tip: { fontSize: 12, color: "var(--th-muted)", textAlign: "center", maxWidth: 520 },
   newBtn: {
     width: "100%",
+    maxWidth: 460,
     padding: 12,
     borderRadius: 12,
     border: "none",
-    background: "linear-gradient(135deg,#00f5a0,#00bcd4)",
-    color: "#06121f",
+    background: "linear-gradient(180deg,#0d7ec7 0%,#0b6eaf 100%)",
+    color: "#fff",
     fontWeight: 700,
     cursor: "pointer",
   },
@@ -1611,65 +2000,67 @@ const Mo = {
   overlay: {
     position: "fixed",
     inset: 0,
-    background: "rgba(0,0,0,0.75)",
+    background: "rgba(11,28,48,0.32)",
     zIndex: 1300,
     display: "flex",
     alignItems: "flex-end",
     justifyContent: "center",
     padding: 14,
+    backdropFilter: "blur(8px)",
   },
   box: {
     width: "100%",
-    maxWidth: 440,
-    background: "#0a1220",
-    border: "1px solid rgba(0,245,160,0.2)",
-    borderRadius: 18,
+    maxWidth: 520,
+    background: "rgba(8,16,34,0.95)",
+    border: "1px solid rgba(16,34,58,0.14)",
+    borderRadius: 20,
     padding: 18,
     animation: "slideUp 0.2s ease",
+    color: "var(--th-ink)",
   },
-  title: { fontSize: 16, fontWeight: 700, color: "#00f5a0", marginBottom: 10 },
+  title: { fontSize: 18, fontWeight: 700, color: "var(--th-ink)", marginBottom: 10, fontFamily: "'Space Grotesk',sans-serif" },
   rowStat: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     padding: "8px 0",
-    color: "rgba(232,240,254,0.85)",
-    borderBottom: "1px solid rgba(255,255,255,0.06)",
+    color: "rgba(16,34,58,0.9)",
+    borderBottom: "1px solid rgba(16,34,58,0.08)",
   },
-  bigNum: { fontFamily: "'Space Mono',monospace", fontWeight: 700, color: "#fff" },
+  bigNum: { fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, color: "var(--th-ink)" },
   convertBtn: {
     width: "100%",
     padding: 11,
     marginTop: 14,
     borderRadius: 10,
     border: "none",
-    background: "linear-gradient(135deg,#00f5a0,#00bcd4)",
-    color: "#06121f",
+    background: "linear-gradient(180deg,#0d7ec7 0%,#0b6eaf 100%)",
+    color: "#fff",
     fontWeight: 700,
     cursor: "pointer",
   },
   subHd: {
     marginTop: 14,
     marginBottom: 6,
-    fontSize: 10,
+    fontSize: 11,
     textTransform: "uppercase",
-    color: "rgba(232,240,254,0.45)",
+    color: "var(--th-muted)",
     letterSpacing: 1,
   },
   ruleRow: {
     fontSize: 12,
-    color: "rgba(232,240,254,0.75)",
+    color: "rgba(16,34,58,0.85)",
     padding: "6px 0",
-    borderBottom: "1px solid rgba(255,255,255,0.05)",
+    borderBottom: "1px solid rgba(16,34,58,0.06)",
   },
   close: {
     width: "100%",
     marginTop: 12,
     padding: 10,
     borderRadius: 10,
-    border: "1px solid rgba(255,255,255,0.1)",
-    background: "rgba(255,255,255,0.03)",
-    color: "rgba(232,240,254,0.6)",
+    border: "1px solid rgba(16,34,58,0.14)",
+    background: "rgba(8,16,34,0.6)",
+    color: "var(--th-muted)",
     cursor: "pointer",
   },
 };
@@ -1679,7 +2070,7 @@ const AD = {
     position: "fixed",
     inset: 0,
     zIndex: 1400,
-    background: "rgba(5,8,16,0.96)",
+    background: "rgba(16,34,58,0.68)",
     backdropFilter: "blur(6px)",
   },
 };
@@ -1688,102 +2079,102 @@ const G = {
   wrap: {
     display: "flex",
     flexDirection: "column",
-    gap: 10,
-    padding: 10,
-  },
-  card: {
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: 12,
+    gap: 12,
     padding: 12,
   },
-  title: { fontSize: 14, fontWeight: 700, marginBottom: 6 },
-  sub: { fontSize: 12, color: "rgba(232,240,254,0.55)", marginBottom: 10, lineHeight: 1.4 },
+  card: {
+    background: "rgba(8,16,34,0.78)",
+    border: "1px solid rgba(16,34,58,0.12)",
+    borderRadius: 14,
+    padding: 14,
+  },
+  title: { fontSize: 15, fontWeight: 700, marginBottom: 6, color: "var(--th-ink)" },
+  sub: { fontSize: 12.5, color: "var(--th-muted)", marginBottom: 10, lineHeight: 1.4 },
   grid: { display: "grid", gridTemplateColumns: "1fr", gap: 8 },
   row: { display: "flex", gap: 8, alignItems: "center" },
   input: {
     width: "100%",
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.1)",
-    borderRadius: 9,
+    background: "rgba(8,16,34,0.82)",
+    border: "1px solid rgba(16,34,58,0.14)",
+    borderRadius: 10,
     padding: "8px 10px",
-    color: "#e8f0fe",
-    fontSize: 12,
+    color: "var(--th-ink)",
+    fontSize: 13,
     outline: "none",
-    fontFamily: "'Sora',sans-serif",
+    fontFamily: "'Manrope',sans-serif",
   },
   btnPrimary: {
     marginTop: 10,
     width: "100%",
     border: "none",
-    borderRadius: 9,
-    padding: "9px 11px",
-    background: "linear-gradient(135deg,#00f5a0,#00bcd4)",
-    color: "#06121f",
+    borderRadius: 10,
+    padding: "10px 12px",
+    background: "linear-gradient(180deg,#0d7ec7 0%,#0b6eaf 100%)",
+    color: "#fff",
     fontWeight: 700,
     cursor: "pointer",
   },
   btnSecondary: {
     border: "none",
-    borderRadius: 9,
+    borderRadius: 10,
     padding: "9px 12px",
-    background: "rgba(0,217,245,0.22)",
-    color: "#00d9f5",
+    background: "rgba(12,123,198,0.18)",
+    color: "var(--th-accent-strong)",
     fontWeight: 700,
     cursor: "pointer",
     flexShrink: 0,
   },
   list: { display: "flex", flexDirection: "column", gap: 8, marginTop: 8 },
   listItem: {
-    border: "1px solid rgba(255,255,255,0.08)",
-    background: "rgba(255,255,255,0.02)",
-    borderRadius: 10,
+    border: "1px solid rgba(16,34,58,0.12)",
+    background: "rgba(8,16,34,0.72)",
+    borderRadius: 12,
     padding: 9,
     display: "flex",
     flexDirection: "column",
     gap: 6,
   },
-  itemText: { fontSize: 12.5, color: "#e8f0fe" },
-  itemMeta: { fontSize: 10.5, color: "rgba(232,240,254,0.45)" },
+  itemText: { fontSize: 12.5, color: "var(--th-ink)" },
+  itemMeta: { fontSize: 10.5, color: "var(--th-muted)" },
   actionRow: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 },
   linkBtn: {
     display: "inline-block",
     fontSize: 11,
-    color: "#00f5a0",
+    color: "var(--th-accent)",
     textDecoration: "none",
-    border: "1px solid rgba(0,245,160,0.4)",
+    border: "1px solid rgba(10,158,159,0.4)",
     borderRadius: 8,
     padding: "5px 8px",
   },
   inAppBadge: {
     fontSize: 11,
-    color: "#00d9f5",
-    border: "1px solid rgba(0,217,245,0.4)",
+    color: "var(--th-accent-strong)",
+    border: "1px solid rgba(12,123,198,0.4)",
     borderRadius: 8,
     padding: "5px 8px",
   },
   deleteBtn: {
-    border: "1px solid rgba(255,68,68,0.35)",
+    border: "1px solid rgba(191,84,63,0.35)",
     borderRadius: 8,
-    background: "rgba(255,68,68,0.12)",
-    color: "#ff7b7b",
+    background: "rgba(191,84,63,0.12)",
+    color: "#b0523d",
     fontSize: 11,
     padding: "5px 8px",
     cursor: "pointer",
   },
-  empty: { fontSize: 11.5, color: "rgba(232,240,254,0.45)" },
+  empty: { fontSize: 11.5, color: "var(--th-muted)" },
   resources: { display: "flex", flexDirection: "column", gap: 8 },
-  resourceLink: { fontSize: 12, color: "#00d9f5", textDecoration: "none" },
+  resourceLink: { fontSize: 12, color: "var(--th-accent-strong)", textDecoration: "none" },
 };
 
 const P = {
   wrap: { flex: 1, padding: 12 },
   card: {
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: 12,
-    padding: 14,
+    background: "rgba(8,16,34,0.82)",
+    border: "1px solid rgba(16,34,58,0.12)",
+    borderRadius: 14,
+    padding: 16,
   },
-  title: { fontSize: 15, fontWeight: 700, marginBottom: 8 },
-  text: { fontSize: 12.5, color: "rgba(232,240,254,0.6)", lineHeight: 1.5, marginBottom: 6 },
+  title: { fontSize: 16, fontWeight: 700, marginBottom: 8, color: "var(--th-ink)" },
+  text: { fontSize: 13, color: "var(--th-muted)", lineHeight: 1.5, marginBottom: 6 },
 };
