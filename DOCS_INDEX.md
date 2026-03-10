@@ -106,7 +106,7 @@ scripts/
 ├── deploy.js              - Deploy to Base
 └── mint.js                - Mint tokens
 
-hardhat.config.js          - Hardhat config
+hardhat.config.cjs          - Hardhat config
 ```
 
 ---
